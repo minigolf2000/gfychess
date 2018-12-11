@@ -1,0 +1,32 @@
+{
+  "name": "gfychess",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/caeleel/gfychess.git",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^10.12.12",
+    "@types/react": "^16.7.17",
+    "@types/react-copy-to-clipboard": "^4.2.6",
+    "@types/react-dom": "^16.0.11",
+    "awesome-typescript-loader": "^3.1.3",
+    "babel-minify-webpack-plugin": "^0.2.0",
+    "react": "16.7.0-alpha.2",
+    "react-copy-to-clipboard": "^5.0.1",
+    "react-dom": "16.7.0-alpha.2",
+    "typescript": "^3.2.2",
+    "webpack": "^2.4.1",
+    "webpack-dev-server": "^2.4.5",
+    "webpack-merge": "^4.1.1"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --config webpack.config.js",
+    "build": "webpack --config webpack.config.js --env=production",
+    "build:bundle-analyzer": "webpack --config webpack.config.js --env=bundle-analyzer"
+  },
+  "devDependencies": {
+    "tslint": "^5.8.0",
+    "webpack-bundle-analyzer": "^2.9.1"
+  }
+}
