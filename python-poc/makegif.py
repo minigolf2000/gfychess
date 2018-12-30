@@ -272,15 +272,6 @@ def draw_region(board, min_y, max_y, min_x, max_x):
             idx += 1
     return sequence
 
-def region_key(board, min_y, max_y, min_x, max_x):
-    width = max_x - min_x
-    height = max_y - min_y
-    key = "{}-{}-{}-".format((min_x + min_y)%2, width, height)
-    for y in range(min_y, max_y):
-        for x in range(min_x, max_x):
-            key += board[y][x]
-    return key
-
 def apply_move(moves, idx, board):
     side = 'w'
     offset = 1
@@ -449,7 +440,7 @@ def create_gif(moves):
 
             start = time.time()
             for i in range(min_y, max_y):
-                key = region_key(board, i, i+1, min_x, max_x)
+                key = ''.join(board[i][min_x:max_x]) + str((i + min_x)%2)
                 if key not in region_cache:
                     sequence = draw_region(board_raster, i, i+1, min_x, max_x)
                     region_cache[key] = lzw(sequence, 16)
