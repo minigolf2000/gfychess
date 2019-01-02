@@ -3,36 +3,35 @@ import * as React from "react";
 
 interface Props {
   fullPgn: string;
-  setSelectedPgn(selectedPgn: string): void;
+  start: number;
+  end: number;
+  setStart(start: number): void;
+  setEnd(end: number): void;
 }
 
 export function PGNSelector(props: Props) {
-  let { fullPgn, setSelectedPgn } = props;
-
+  const { fullPgn, start, end, setStart, setEnd } = props;
   const parsedMoves = parseMoves(fullPgn);
-
-  const [startIndex, setStartIndex] = useState(0);
-  const [endIndex, setEndIndex] = useState(parsedMoves.length - 1);
 
   const className = (i: number) => {
     let className = [];
-    if (i == startIndex) {
+    if (i == start) {
       className.push("start");
     }
-    if (i == endIndex) {
+    if (i == end) {
       className.push("end");
     }
-    if (startIndex <= i && i <= endIndex) {
+    if (start <= i && i <= end) {
       className.push("between");
     }
     return className.join(" ");
   }
 
   const onClick = (i: number) => {
-    if (i >= startIndex) {
-      setEndIndex(i);
+    if (i >= start) {
+      setEnd(i);
     } else {
-      setStartIndex(i);
+      setStart(i);
     }
   }
 
@@ -48,7 +47,7 @@ export function PGNSelector(props: Props) {
           </li>
         ))}
       </ol>
-      {endIndex - startIndex} out of {parsedMoves.length} moves
+      {end - start} out of {parsedMoves.length} moves
     </div>
   );
 }

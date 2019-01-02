@@ -3,46 +3,25 @@ import exampleGames from "../lib/examples";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 
 interface Props {
-  setPgn(fullPgn: string, selectedPgn: string): void;
+  pgn: string;
+  setPgn(pgn: string): void;
 }
 
-interface State {
-  text: string;
-  selected: string;
-}
-
-export class PGNInput extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      text: "1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#",
-      selected: "",
-    };
-  }
-
+export class PGNInput extends React.Component<Props, {}> {
   public render() {
-    const { text, selected } = this.state;
-
     return (
       <div>
         <textarea
+          placeholder='Paste in chess PGN here e.g. "1. e4 e5 2. Nf3 Nc6 3. Bb5 ..."'
           ref='myTextarea'
-          value = {text}
-          onSelect = {() => {
-            let textVal = this.refs.myTextarea;
-            let cursorStart = (textVal as any).selectionStart;
-            let cursorEnd = (textVal as any).selectionEnd;
-            this.setState({
-              selected: this.state.text.substring(cursorStart, cursorEnd)
-            });
-            this.props.setPgn(this.state.text, this.state.text.substring(cursorStart,cursorEnd))
+          value = {this.props.pgn}
+          onFocus = {() => {
+            (this.refs.myTextarea as HTMLTextAreaElement).select();
           }}
           onChange={(e) => {
-            this.props.setPgn(this.state.text, this.state.text)
-            this.setState({text: e.target.value});
+            this.props.setPgn(e.target.value)
           }}
-          >
+        >
         </textarea>
 
         <div id="examples">
@@ -51,7 +30,6 @@ export class PGNInput extends React.Component<Props, State> {
             <CopyToClipboard
               key={game.name}
               text={game.pgn}
-              onCopy={(e) => console.log(e)}
             >
               <button>
                 <img src="public/clipboard.svg" />
@@ -62,6 +40,5 @@ export class PGNInput extends React.Component<Props, State> {
         </div>
       </div>
     );
-
   }
 }
