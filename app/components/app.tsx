@@ -18,6 +18,7 @@ export default function App() {
   return (
     <>
       <h1><img src="public/logo.svg" alt="Gfychess"/></h1>
+      <h2>Create and share chess animated GIFs!</h2>
       <PGNInput
         pgn={fullPgn}
         setPgn={setPgnAndReset}
