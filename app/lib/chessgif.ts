@@ -108,6 +108,7 @@ export class ChessGif {
   moves: string[];
   moveIdx: number;
   board: string[][];
+  initPromise: Promise<void>;
   boardRaster: Uint8Array;
   dirtySquares: Set<number[]>;
   dirtyBoard: boolean;
@@ -124,6 +125,7 @@ export class ChessGif {
     this.sequence = new Uint8Array(BOARD_SIZE * SQUARE_SIZE);
     this.boardCache = {};
     this.reset();
+    this.initPromise = this.init();
   }
 
   public reset() {
@@ -147,7 +149,7 @@ export class ChessGif {
     return this.gif.data.subarray(0, this.gif.idx);
   }
 
-  public async init() {
+  async init() {
     const ones = new Uint8Array(SQUARE_SIZE);
     for (let i=0; i<SQUARE_SIZE; i++) ones[i] = 1;
     for (let i=0; i<8*SQUARE_SIZE; i++) ROWS[1 - (i&1)].set(ones, i*SQUARE_SIZE);
@@ -167,10 +169,10 @@ export class ChessGif {
     this.moves = moves;
   }
 
-  public createGif(): Uint8Array {
+  public async createGif(): Promise<Uint8Array> {
     while (this.moveIdx < this.moves.length) {
       this.step();
-      this.render();
+      await this.render();
     }
 
     return this.asArrayGif();
@@ -184,7 +186,9 @@ export class ChessGif {
     }
   }
 
-  public render(): Uint8Array {
+  public async render() {
+    await this.initPromise;
+
     let yMin = 8;
     let yMax = 0;
     let xMin = 8;
@@ -215,7 +219,7 @@ export class ChessGif {
       this.dirtySquares.clear();
     }
 
-    if (xMin === 8) return this.asArrayGif();
+    if (xMin === 8) return;
 
     const width = (xMax - xMin) * SQUARE_SIZE;
     const height = (yMax - yMin) * SQUARE_SIZE;
@@ -236,7 +240,6 @@ export class ChessGif {
     }
 
     this.finishImage();
-    return this.asArrayGif();
   }
 
   public step() {
@@ -563,12 +566,10 @@ export class ChessGif {
 export async function example() {
   try {
     const chessGif = new ChessGif();
-    await chessGif.init();
     const moves = parseMoves("1.e4 {[%clk 0:02:59]} e5 {[%clk 0:02:59]} 2.Nf3 {[%clk 0:02:58]} Nc6 {[%clk 0:02:59]} 3.Bb5 {[%clk 0:02:58]} Nf6 {[%clk 0:02:59]} 4.d3 {[%clk 0:02:57]} Bc5 {[%clk 0:02:57]} 5.c3 {[%clk 0:02:57]} O-O {[%clk 0:02:56]} 6.O-O {[%clk 0:02:56]} Re8 {[%clk 0:02:56]} 7.h3 {[%clk 0:02:54]} a6 {[%clk 0:02:55]} 8.Ba4 {[%clk 0:02:53]} d5 {[%clk 0:02:54]} 9.Nbd2 {[%clk 0:02:51]} h6 {[%clk 0:02:53]} 10.Re1 {[%clk 0:02:50]} b5 {[%clk 0:02:51]} 11.Bb3 {[%clk 0:02:48]} d4 {[%clk 0:02:51]} 12.Nf1 {[%clk 0:02:43]} Be6 {[%clk 0:02:49]} 13.Ng3 {[%clk 0:02:38]} Bxb3 {[%clk 0:02:43]} 14.axb3 {[%clk 0:02:38]} Qd7 {[%clk 0:02:40]} 15.b4 {[%clk 0:02:24]} Bf8 {[%clk 0:02:37]} 16.Qe2 {[%clk 0:02:22]} dxc3 {[%clk 0:02:22]} 17.bxc3 {[%clk 0:02:20]} a5 {[%clk 0:02:20]} 18.bxa5 {[%clk 0:02:16]} Nxa5 {[%clk 0:02:20]} 19.Be3 {[%clk 0:02:11]} c5 {[%clk 0:02:17]} 20.Red1 {[%clk 0:02:06]} Qc6 {[%clk 0:02:08]} 21.Qc2 {[%clk 0:01:45]} b4 {[%clk 0:02:02]} 22.Nxe5 {[%clk 0:01:30]} b3 {[%clk 0:01:53]} 23.Qxb3 {[%clk 0:01:03]} Nxb3 {[%clk 0:01:49]}  0-1");
     const begin = Date.now();
-
     chessGif.loadMoves(moves);
-    const gif = chessGif.createGif();
+    const gif = await chessGif.createGif();
     const end = Date.now();
 
     fs.writeFile("example.gif", gif, (err) => console.log(`Time elapsed: ${end - begin}ms`));
@@ -576,3 +577,5 @@ export async function example() {
     console.log(e);
   }
 }
+
+// example();
