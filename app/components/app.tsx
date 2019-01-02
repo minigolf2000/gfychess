@@ -2,6 +2,7 @@ import { useState } from "react";
 import * as React from "react";
 import { PGNInput } from "./pgn-input";
 import { PGNSelector } from "./pgn-selector";
+import { Gif } from "./gif";
 
 export default function App() {
   const [fullPgn, setPgn] = useState("");
@@ -32,7 +33,11 @@ export default function App() {
           />
         </div>
         <div id="right">
-          <img className="example" src="public/example.gif" alt="example gif" />
+          <Gif
+            fullPgn={fullPgn}
+            start={start}
+            end={end}
+          />
           Right-click to save or copy your GIF!
 
         </div>

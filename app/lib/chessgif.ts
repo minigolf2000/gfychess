@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
-import * as fs from 'fs';
+// import * as fs from 'fs';
+import { parseMoves } from './parse_moves';
 
 const SQUARE_SIZE = 48;
 const BOARD_SIZE = SQUARE_SIZE * 8;
@@ -58,44 +59,6 @@ function malloc(buffer: ResizableBuffer, toAdd: number) {
     newBuffer.set(buffer.data);
     buffer.data = newBuffer;
   }
-}
-
-function cleanMoves(moves: string): string {
-  moves = moves.replace(new RegExp("\n", 'g'), " ");
-  let ret = '';
-  let inComment = false;
-  let inTag = false;
-
-  for (const c of moves) {
-    if (!inTag && c === '{') inComment = true;
-    if (!inComment && c === '[') inTag = true;
-
-    if (!inComment && !inTag) ret += c;
-    if (c === '}') inComment = false;
-    if (c === ']') inTag = false;
-  }
-
-  return ret;
-}
-
-function parseMoves(moveStr: string): string[] {
-  const rawMoves = cleanMoves(moveStr).split('.');
-  rawMoves.shift();
-  const moves: string[] = [];
-
-  for (const move of rawMoves) {
-    const tokens = move.trim().split(' ');
-    let extracted = 0;
-    for (const token of tokens) {
-      if (token != '') {
-        moves.push(token);
-        extracted++;
-        if (extracted === 2) break;
-      }
-    }
-  }
-
-  return moves;
 }
 
 interface ResizableBuffer {
@@ -255,7 +218,7 @@ export class ChessGif {
     let move = this.moves[this.moveIdx];
     this.moveIdx++;
 
-    move = move.replace(new RegExp(/[#\?\+x]/, 'g'), '');
+    move = move.replace(new RegExp(/[#!\?\+x]/, 'g'), '');
     let target: number[] = null;
     let piece: string = null;
     let rankConstraint: number = null;
@@ -572,7 +535,7 @@ export async function example() {
     const gif = await chessGif.createGif();
     const end = Date.now();
 
-    fs.writeFile("example.gif", gif, (err) => console.log(`Time elapsed: ${end - begin}ms`));
+    //fs.writeFile("example.gif", gif, (err) => console.log(`Time elapsed: ${end - begin}ms`));
   } catch(e) {
     console.log(e);
   }

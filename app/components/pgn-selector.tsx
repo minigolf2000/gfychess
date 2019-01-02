@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { parseMoves } from "../lib/parse_moves"
 import * as React from "react";
 
 interface Props {
@@ -67,24 +68,6 @@ function move(props: MoveProps) {
         <span className="flex">{props.san}</span>
     </span>
   );
-}
-
-const parseMoves = (pgn: string) => {
-  const rawMoves = pgn.split(".").slice(1)
-
-  let moves: String[] = []
-  rawMoves.forEach((move: string) => {
-    let tokens = move.trim().split(' ');
-    let numExtracted = 0;
-    tokens.forEach((token: string) => {
-      if (token != "" && numExtracted < 2) {
-        moves.push(token);
-        numExtracted += 1;
-      }
-    });
-  });
-
-  return moves;
 }
 
 const columns = (pgn: string) => {
