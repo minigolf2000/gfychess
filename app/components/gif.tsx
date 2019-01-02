@@ -19,21 +19,18 @@ export class Gif extends React.Component<Props, State> {
     this.state = {url: ""}
   }
 
+  chessGif = new ChessGif();
+
   public async componentDidUpdate(prevProps: Props) {
     if (prevProps.fullPgn != this.props.fullPgn ||
         prevProps.start != this.props.start ||
         prevProps.end != this.props.end) {
-      const chessGif = new ChessGif();
       const moves = parseMoves(this.props.fullPgn);
 
       if (moves.length > 0) {
-        const begin = Date.now();
-        chessGif.loadMoves(moves);
-        const gif = await chessGif.createGif();
-        const end = Date.now();
-
-        const blob = new Blob([new Uint8Array(gif)]);
-        const url = URL.createObjectURL(blob);
+        this.chessGif.loadMoves(moves);
+        const gif = await this.chessGif.createGif();
+        const url = this.chessGif.asBase64Gif();
         console.log(url);
         this.setState({url})
       }

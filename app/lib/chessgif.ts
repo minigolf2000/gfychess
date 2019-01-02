@@ -84,10 +84,10 @@ export class ChessGif {
       idx: 0,
     };
     this.moves = [];
+    this.moveIdx = 0;
     this.boardRaster = new Uint8Array(BOARD_SIZE * BOARD_SIZE);
     this.sequence = new Uint8Array(BOARD_SIZE * SQUARE_SIZE);
     this.boardCache = {};
-    this.reset();
     this.initPromise = this.init();
   }
 
@@ -130,6 +130,7 @@ export class ChessGif {
 
   public loadMoves(moves: string[]) {
     this.moves = moves;
+    this.reset();
   }
 
   public async createGif(): Promise<Uint8Array> {
