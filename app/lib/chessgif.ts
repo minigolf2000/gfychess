@@ -134,6 +134,7 @@ export class ChessGif {
   }
 
   public async createGif(): Promise<Uint8Array> {
+    await this.render();
     while (this.moveIdx < this.moves.length) {
       this.step();
       await this.render();
