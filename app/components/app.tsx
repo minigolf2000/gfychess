@@ -36,14 +36,13 @@ export default function App() {
           />
         </div>
         <div id="right">
+          <p className={"description " + (fullPgn.length == 0 ? "hidden" : "")}>Right-click to save or copy your GIF!</p>
           <Gif
             fullPgn={fullPgn}
             start={start}
             end={end}
             hoveredMoveIndex={hoveredMoveIndex}
           />
-          <p className="description">Right-click to save or copy your GIF!</p>
-
         </div>
 
       </div>

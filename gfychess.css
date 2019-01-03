@@ -41,6 +41,10 @@ h3 {
   text-align: center;
 }
 
+#right .description.hidden {
+  visibility: hidden;
+}
+
 textarea {
   width: 100%;
   height: 40px;
@@ -114,7 +118,7 @@ textarea::placeholder {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 20px 0px;
+  margin-bottom: 20px;
 }
 
 #examples button {
