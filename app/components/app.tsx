@@ -39,7 +39,7 @@ export default function App() {
             start={start}
             end={end}
           />
-          Right-click to save or copy your GIF!
+          <p className="description">Right-click to save or copy your GIF!</p>
 
         </div>
 
