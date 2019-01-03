@@ -8,6 +8,7 @@ export default function App() {
   const [fullPgn, setPgn] = useState("");
   const [start, setStart] = useState(-1);
   const [end, setEnd] = useState(-1);
+  const [hoveredMoveIndex, setHoveredMoveIndex] = useState(-1);
 
   const setPgnAndReset = (pgn: string) => {
     setPgn(pgn);
@@ -31,6 +32,7 @@ export default function App() {
             end={end}
             setStart={setStart}
             setEnd={setEnd}
+            onHover={setHoveredMoveIndex}
           />
         </div>
         <div id="right">
@@ -38,6 +40,7 @@ export default function App() {
             fullPgn={fullPgn}
             start={start}
             end={end}
+            hoveredMoveIndex={hoveredMoveIndex}
           />
           <p className="description">Right-click to save or copy your GIF!</p>
 

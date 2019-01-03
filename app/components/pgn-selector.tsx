@@ -8,10 +8,11 @@ interface Props {
   end: number;
   setStart(start: number): void;
   setEnd(end: number): void;
+  onHover(i: number): void;
 }
 
 export function PGNSelector(props: Props) {
-  const { fullPgn, start, end, setStart, setEnd } = props;
+  const { fullPgn, start, end, setStart, setEnd, onHover } = props;
   const parsedMoves = parseMoves(fullPgn);
 
   const className = (i: number) => {
@@ -39,12 +40,14 @@ export function PGNSelector(props: Props) {
   return (
     <div id="pgn-selector">
     <h3>Moves to include</h3>
-      <ol>
+      <ol
+        onMouseOver={() => onHover(-1)}
+        onMouseOut={() => onHover(-1)}
+      >
         {columns(fullPgn).map((column: string[], rowNum: number) => (
           <li key={rowNum}>
-            <span className="index">{rowNum + 1}</span>
-            {move({san: column[0], className: className(rowNum * 2), onClick, i: rowNum * 2})}
-            {move({san: column[1], className: className(rowNum * 2 + 1), onClick, i: rowNum * 2 + 1})}
+            {move({san: column[0], className: className(rowNum * 2), onClick, onHover, i: rowNum * 2})}
+            {move({san: column[1], className: className(rowNum * 2 + 1), onClick, onHover, i: rowNum * 2 + 1})}
           </li>
         ))}
       </ol>
@@ -57,6 +60,7 @@ interface MoveProps {
   san: string; // e.g. "e4", "kd6", "0-0"
   className: string;
   onClick: (i: number) => void;
+  onHover: (i: number) => void;
   i: number;
 }
 
@@ -64,6 +68,8 @@ function move(props: MoveProps) {
   return (
     <span
       onClick={() => props.onClick(props.i)}
+      onMouseOver={(e) => {e.stopPropagation(); props.onHover(props.i)}}
+      onMouseOut={(e) => {e.stopPropagation()}}
       className={"move " + props.className}>
         <span className="flex">{props.san}</span>
     </span>

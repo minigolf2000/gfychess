@@ -7,6 +7,7 @@ interface Props {
   fullPgn: string;
   start: number;
   end: number;
+  hoveredMoveIndex: number;
 }
 
 interface State {
@@ -24,14 +25,28 @@ export class Gif extends React.Component<Props, State> {
   public async componentDidUpdate(prevProps: Props) {
     if (prevProps.fullPgn != this.props.fullPgn ||
         prevProps.start != this.props.start ||
-        prevProps.end != this.props.end) {
+        prevProps.end != this.props.end ||
+        prevProps.hoveredMoveIndex != this.props.hoveredMoveIndex) {
+      console.log(this.props.hoveredMoveIndex);
       const moves = parseMoves(this.props.fullPgn);
 
-      if (moves.length > 0) {
+      if (moves.length > 0 && this.props.hoveredMoveIndex == -1) {
         this.chessGif.loadMoves(moves);
-        const gif = await this.chessGif.createGif();
+        await this.chessGif.createGif();
+
         const url = this.chessGif.asBase64Gif();
-        console.log(url);
+        this.setState({url})
+      } else if (this.props.hoveredMoveIndex >= 0) {
+        this.chessGif.reset();
+        // await this.chessGif.render();
+        let i = 0;
+        while (i <= this.props.hoveredMoveIndex) {
+          this.chessGif.step();
+          i++;
+        }
+        await this.chessGif.render();
+
+        const url = this.chessGif.asBase64Gif();
         this.setState({url})
       }
     }
@@ -40,7 +55,7 @@ export class Gif extends React.Component<Props, State> {
   public render() {
     return (
       <>
-        <img className="example" src={this.state.url} alt="" />
+        <img id="animated-gif" className={(this.props.hoveredMoveIndex >= 0 ? "frozen" : "")} src={this.state.url} alt="" />
       </>
     );
   }
