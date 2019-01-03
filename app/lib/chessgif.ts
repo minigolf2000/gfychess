@@ -50,7 +50,7 @@ const NUM_COLORS = PALETTE.length > 16 ? 256 :
   PALETTE.length > 2 ? 4 : 2;
 const COLOR_BITS = Math.log2(NUM_COLORS);
 
-const PIECE_URL = "https://raw.githubusercontent.com/minigolf2000/gfychess-www/master/public/piece_set.dat";
+const PIECE_URL = "https://raw.githubusercontent.com/minigolf2000/gfychess/master/public/piece_set.dat";
 let PIECE_DATA: Uint8Array = null;
 
 function malloc(buffer: ResizableBuffer, toAdd: number) {
