@@ -51,7 +51,7 @@ export function PGNSelector(props: Props) {
           </li>
         ))}
       </ol>
-      {end - start} out of {parsedMoves.length} moves
+      {end - start + 1} out of {parsedMoves.length} moves
     </div>
   );
 }

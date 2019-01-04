@@ -133,11 +133,16 @@ export class ChessGif {
     this.reset();
   }
 
-  public async createGif(): Promise<Uint8Array> {
-    await this.render();
-    while (this.moveIdx < this.moves.length) {
-      this.step();
+  public async createGif(start: number, end: number): Promise<Uint8Array> {
+    if (start == 0) {
       await this.render();
+    }
+
+    while (this.moveIdx < this.moves.length && this.moveIdx <= end) {
+      this.step();
+      if (this.moveIdx >= start) {
+        await this.render();
+      }
     }
 
     return this.asArrayGif();
@@ -535,7 +540,7 @@ export async function example() {
     await chessGif.initPromise;
     const begin = Date.now();
     chessGif.loadMoves(moves);
-    const gif = await chessGif.createGif();
+    // const gif = await chessGif.createGif();
     const end = Date.now();
 
     // fs.writeFile("example.gif", gif, (err) => console.log(`Time elapsed: ${end - begin}ms`));

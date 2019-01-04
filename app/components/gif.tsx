@@ -27,12 +27,11 @@ export class Gif extends React.Component<Props, State> {
         prevProps.start != this.props.start ||
         prevProps.end != this.props.end ||
         prevProps.hoveredMoveIndex != this.props.hoveredMoveIndex) {
-      console.log(this.props.hoveredMoveIndex);
       const moves = parseMoves(this.props.fullPgn);
 
       if (moves.length > 0 && this.props.hoveredMoveIndex == -1) {
         this.chessGif.loadMoves(moves);
-        await this.chessGif.createGif();
+        await this.chessGif.createGif(this.props.start, this.props.end);
 
         const url = this.chessGif.asBase64Gif();
         this.setState({url})
