@@ -29,11 +29,18 @@ export function PGNSelector(props: Props) {
     return className.join(" ");
   }
 
+  const [startSelected, setStartSelected] = useState(false);
+
   const onClick = (i: number) => {
-    if (i >= start) {
-      setEnd(i);
-    } else {
+    if (i < start || !startSelected) {
       setStart(i);
+      if (i > end) {
+        setEnd(i);
+      }
+      setStartSelected(true);
+    } else {
+      setEnd(i);
+      setStartSelected(false);
     }
   }
 
