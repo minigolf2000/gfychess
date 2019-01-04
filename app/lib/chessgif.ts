@@ -236,8 +236,13 @@ export class ChessGif {
       target = [8 - parseInt(move[1]), FILES[move[0]]];
       candidates = [[target[0] + offset, target[1]], [target[0] + offset*2, target[1]]];
       piece = side + 'P';
-    } else if (move === 'O-O' || move === 'O-O-O') {
-      const files = {'O-O': [7, 4, 6, 5], 'O-O-O': [0, 4, 2, 3]}[move];
+    } else if (move === 'O-O' || move === 'O-O-O' || move === '0-0' || move === '0-0-0') {
+      const files = {
+        'O-O': [7, 4, 6, 5],
+        'O-O-O': [0, 4, 2, 3],
+        '0-0': [7, 4, 6, 5],
+        '0-0-0': [0, 4, 2, 3],
+      }[move];
       let rank = 0;
       if (side === 'w') rank = 7;
       const king = side + 'K';
