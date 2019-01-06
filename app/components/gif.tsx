@@ -52,10 +52,12 @@ export class Gif extends React.Component<Props, State> {
   }
 
   public render() {
-    return (
-      <>
+    if (this.props.fullPgn == "") {
+      return null;
+    } else {
+      return (
         <img id="animated-gif" className={(this.props.hoveredMoveIndex >= 0 ? "frozen" : "")} src={this.state.url} alt="" />
-      </>
-    );
+      )
+    }
   }
 }

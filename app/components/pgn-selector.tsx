@@ -44,6 +44,16 @@ export function PGNSelector(props: Props) {
     }
   }
 
+  useEffect(() => {
+    if (!document.body.onmouseover) {
+      document.body.onmouseover = () => {
+        props.onHover(-1);
+      }
+    }
+  })
+
+  if (fullPgn == "") { return null; }
+
   return (
     <div id="pgn-selector">
     <h3>Moves to include</h3>
@@ -72,6 +82,10 @@ interface MoveProps {
 }
 
 function move(props: MoveProps) {
+  if (!props.san) {
+    return <span className="move disabled">&nbsp;</span>
+  }
+
   return (
     <span
       onClick={() => props.onClick(props.i)}

@@ -37,6 +37,11 @@ h3 {
   flex-direction: column;
 }
 
+.description {
+  color: #666666;
+  font-size: .8rem;
+}
+
 #right .description {
   text-align: center;
 }
@@ -67,16 +72,13 @@ textarea::placeholder {
 
 #pgn-selector {
   margin-right: 40px;
-}
-
-#pgn-selector h3 {
   text-align: center;
 }
 
 #pgn-selector ol {
   font-family: "chesssanspiratf", sans-serif;
   color: #666666;
-  padding: 10px 20px;
+  padding: 0px 20px;
   font-size: .7rem;
 }
 
@@ -85,8 +87,8 @@ textarea::placeholder {
   height: 20px;
   width: 40px;
   padding: 5px 10px;
-  cursor: pointer;
   border: 2px solid transparent;
+  cursor: pointer;
   color: #333333;
   font-size: 1rem;
 }
@@ -94,6 +96,14 @@ textarea::placeholder {
 #pgn-selector .move:hover {
   color: #333333;
   border: 2px dotted #555555;
+}
+
+#pgn-selector .move.disabled {
+  cursor: inherit;
+}
+
+#pgn-selector .move.disabled:hover {
+  border: 2px solid transparent;
 }
 
 #pgn-selector .between {
