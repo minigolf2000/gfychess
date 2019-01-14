@@ -1,7 +1,5 @@
 const path = require('path');
-const webpack = require('webpack');
 const merge = require('webpack-merge');
-const MinifyPlugin = require("babel-minify-webpack-plugin");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = function (env = "development") {
@@ -45,23 +43,13 @@ module.exports = function (env = "development") {
       // devtool: 'inline-source-map',
       devServer: {
         historyApiFallback: true
-      }
+      },
+      mode: 'development'
     });
   } else {
     exports = merge(exports, {
-      plugins: [
-        // for some reason these plugins cause
-        // "Uncaught (in promise) SyntaxError: Identifier 'e' has already been declared"
-        // TODO: debug this so that the production bundle can be
-        // small (152KB, down from 1028KB) again
-        // new MinifyPlugin({}, {}),
-        // new webpack.DefinePlugin({ // https://stackoverflow.com/a/36285479
-        //   "process.env": {
-        //      NODE_ENV: JSON.stringify("production")
-        //    }
-        // }),
-      ],
-    });
+      mode: 'production'
+    })
   }
 
   if (env == "bundle-analyzer") {
