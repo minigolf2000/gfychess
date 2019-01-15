@@ -70,9 +70,25 @@ textarea::placeholder {
   src: url("public/ChessSansPiratf.woff");
 }
 
+.left.hidden {
+  visibility: hidden;
+  transition-duration: calc(16ms * 5);
+  max-width: 0;
+  opacity: 0;
+}
+
+.left {
+  max-width: 15vw;
+  opacity: 1;
+  transition: max-width calc(16ms * 14) cubic-bezier(0, 0, 0.49, 0.99);
+  transition-property: max-width, opacity;
+
+}
+
 #pgn-selector {
   margin-right: 40px;
   text-align: center;
+  width: 168px;
 }
 
 #pgn-selector ol {
@@ -162,4 +178,10 @@ textarea::placeholder {
 
 #animated-gif.frozen {
   border: 2px dotted #555555;
+}
+
+.example-footer {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #999999;
 }

@@ -22,33 +22,45 @@ export class Gif extends React.Component<Props, State> {
 
   chessGif = new ChessGif();
 
-  public async componentDidUpdate(prevProps: Props) {
+  public componentDidMount() {
+    const moves = parseMoves(this.props.fullPgn);
+    this.updateAnimatedGif(moves)
+  }
+
+  public componentDidUpdate(prevProps: Props) {
     if (prevProps.fullPgn != this.props.fullPgn ||
         prevProps.start != this.props.start ||
         prevProps.end != this.props.end ||
         prevProps.hoveredMoveIndex != this.props.hoveredMoveIndex) {
+
       const moves = parseMoves(this.props.fullPgn);
-
       if (moves.length > 0 && this.props.hoveredMoveIndex == -1) {
-        this.chessGif.loadMoves(moves);
-        await this.chessGif.createGif(this.props.start, this.props.end);
-
-        const url = this.chessGif.asBase64Gif();
-        this.setState({url})
+        this.updateAnimatedGif(moves)
       } else if (this.props.hoveredMoveIndex >= 0) {
-        this.chessGif.reset();
-        // await this.chessGif.render();
-        let i = 0;
-        while (i <= this.props.hoveredMoveIndex) {
-          this.chessGif.step();
-          i++;
-        }
-        await this.chessGif.render();
-
-        const url = this.chessGif.asBase64Gif();
-        this.setState({url})
+        this.updateFreezeFrameGif()
       }
     }
+  }
+
+  private async updateAnimatedGif(moves: string[]) {
+    this.chessGif.loadMoves(moves);
+    await this.chessGif.createGif(this.props.start, this.props.end);
+
+    const url = this.chessGif.asBase64Gif();
+    this.setState({url})
+  }
+
+  private async updateFreezeFrameGif() {
+    this.chessGif.reset();
+    let i = 0;
+    while (i <= this.props.hoveredMoveIndex) {
+      this.chessGif.step();
+      i++;
+    }
+    await this.chessGif.render();
+
+    const url = this.chessGif.asBase64Gif();
+    this.setState({url})
   }
 
   public render() {
