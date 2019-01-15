@@ -107,15 +107,21 @@ textarea::placeholder {
 }
 
 #pgn-selector .between {
-  /* background-color: rgb(219, 237, 252); */
-  background-color: rgb(243, 216, 178);
+  background-color: rgb(219, 237, 252);
+}
+
+#pgn-selector .start {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+#pgn-selector .end {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
 #pgn-selector .start, #pgn-selector .end {
-  /*background: linear-gradient(to right, transparent 50%, rgb(219, 237, 252) 50%); */
-  border-radius: 20px;
-  /* background-color: rgb(70, 136, 241); */
-  background-color: rgb(188, 134, 95);
+  background-color: rgb(70, 136, 241);
 }
 
 .flex {
