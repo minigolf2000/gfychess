@@ -11,7 +11,7 @@ interface Props {
   onHover(i: number): void;
 }
 
-export function PGNSelector(props: Props) {
+export function MoveSelector(props: Props) {
   const { fullPgn, start, end, setStart, setEnd, onHover } = props;
   const parsedMoves = parseMoves(fullPgn);
 

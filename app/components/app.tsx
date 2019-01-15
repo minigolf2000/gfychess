@@ -1,7 +1,7 @@
 import { useState } from "react";
 import * as React from "react";
 import { PGNInput } from "./pgn-input";
-import { PGNSelector } from "./pgn-selector";
+import { MoveSelector } from "./move-selector";
 import { Gif } from "./gif";
 
 export default function App() {
@@ -26,7 +26,7 @@ export default function App() {
       />
       <div id="container">
         <div className="left">
-          <PGNSelector
+          <MoveSelector
             fullPgn={fullPgn}
             start={start}
             end={end}

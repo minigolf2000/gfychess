@@ -10,7 +10,7 @@ interface Props {
 export class PGNInput extends React.Component<Props, {}> {
   public render() {
     return (
-      <div>
+      <>
         <textarea
           placeholder='Paste in chess PGN here e.g. "1. e4 e5 2. Nf3 Nc6 3. Bb5 ..."'
           ref='myTextarea'
@@ -38,7 +38,7 @@ export class PGNInput extends React.Component<Props, {}> {
             </CopyToClipboard>
           ))}
         </div>
-      </div>
+      </>
     );
   }
 }
