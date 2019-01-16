@@ -3,14 +3,17 @@ function cleanMoves(moves: string): string {
   let ret = '';
   let inComment = false;
   let inTag = false;
+  let inBranch = false;
 
   for (const c of moves) {
     if (!inTag && c === '{') inComment = true;
     if (!inComment && c === '[') inTag = true;
+    if (!inBranch && c === '(') inBranch = true;
 
-    if (!inComment && !inTag) ret += c;
+    if (!inComment && !inTag && !inBranch) ret += c;
     if (c === '}') inComment = false;
     if (c === ']') inTag = false;
+    if (c === ')') inBranch = false;
   }
 
   return ret;
