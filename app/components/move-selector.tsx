@@ -52,8 +52,6 @@ export function MoveSelector(props: Props) {
     }
   })
 
-  if (fullPgn == "") { return null; }
-
   return (
     <div id="pgn-selector">
     <h3>Moves to include</h3>
@@ -61,7 +59,7 @@ export function MoveSelector(props: Props) {
         onMouseOver={() => onHover(-1)}
         onMouseOut={() => onHover(-1)}
       >
-        {columns(fullPgn).map((column: string[], rowNum: number) => (
+        {columns(parsedMoves).map((column: string[], rowNum: number) => (
           <li key={rowNum}>
             {move({san: column[0], className: className(rowNum * 2), onClick, onHover, i: rowNum * 2})}
             {move({san: column[1], className: className(rowNum * 2 + 1), onClick, onHover, i: rowNum * 2 + 1})}
@@ -97,14 +95,10 @@ function move(props: MoveProps) {
   );
 }
 
-const columns = (pgn: string) => {
-  const rawMoves = pgn.split(".").slice(1)
-
+const columns = (moves: string[]) => {
   let columns: String[][] = []
-  rawMoves.forEach((move: string) => {
-    let tokens = move.trim().split(' ');
-    columns.push(tokens);
-  });
-
+  for (let i = 0; i < moves.length; i += 2) {
+    columns.push([moves[i], moves[i+1]])
+  }
   return columns;
 }
