@@ -53,8 +53,8 @@ export function MoveSelector(props: Props) {
   })
 
   return (
-    <div id="pgn-selector">
-    <h3>Moves to include</h3>
+    <div id="move-selector">
+      <h3>Moves to include</h3>
       <ol
         onMouseOver={() => onHover(-1)}
         onMouseOut={() => onHover(-1)}
@@ -66,7 +66,7 @@ export function MoveSelector(props: Props) {
           </li>
         ))}
       </ol>
-      {end - start + 1} out of {parsedMoves.length} moves
+      <p>{end - start + 1} out of {parsedMoves.length} moves</p>
     </div>
   );
 }
