@@ -8,6 +8,7 @@ interface Props {
   start: number;
   end: number;
   hoveredMoveIndex: number;
+  flipBoard: boolean;
 }
 
 interface State {

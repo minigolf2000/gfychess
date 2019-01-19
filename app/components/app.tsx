@@ -2,6 +2,7 @@ import { useState } from "react";
 import * as React from "react";
 import { PGNInput } from "./pgn-input";
 import { MoveSelector } from "./move-selector";
+import { OptionForm } from "./option-form";
 import { Gif } from "./gif";
 
 export default function App() {
@@ -9,6 +10,7 @@ export default function App() {
   const [start, setStart] = useState(-1);
   const [end, setEnd] = useState(-1);
   const [hoveredMoveIndex, setHoveredMoveIndex] = useState(-1);
+  const [flipBoard, setFlipBoard] = useState(false);
 
   const setPgnAndReset = (pgn: string) => {
     setPgn(pgn);
@@ -25,6 +27,9 @@ export default function App() {
     e = 6;
   }
 
+  const classVisibleWhenPgnFilled = " " + (fullPgn == "" ? "hidden" : "visible")
+  const classVisibleWhenPgnEmpty = " " + (fullPgn != "" ? "hidden" : "visible")
+
   return (
     <>
       <h1><img src="public/logo.svg" alt="Gfychess"/></h1>
@@ -34,7 +39,7 @@ export default function App() {
         setPgn={setPgnAndReset}
       />
       <div id="container">
-        <div className={"left " + (fullPgn == "" ? "hidden" : "")}>
+        <div className={"left" + classVisibleWhenPgnFilled}>
           <MoveSelector
             fullPgn={pgn}
             start={s}
@@ -45,14 +50,22 @@ export default function App() {
           />
         </div>
         <div id="right">
-          <p className={"description " + (fullPgn.length == 0 ? "hidden" : "")}>Right-click to save or copy your GIF!</p>
+          <p className={"description " + classVisibleWhenPgnFilled}>Right-click to save or copy your GIF!</p>
           <Gif
             fullPgn={pgn}
             start={s}
             end={e}
             hoveredMoveIndex={hoveredMoveIndex}
+            flipBoard={flipBoard}
           />
-          {fullPgn == "" && <p className="description example-footer">Example</p>}
+          <p className={"description example-footer " + (classVisibleWhenPgnEmpty)}>Example</p>
+
+          <div className={classVisibleWhenPgnFilled}>
+            <OptionForm
+              flipBoard={flipBoard}
+              setFlipBoard={setFlipBoard}
+            />
+          </div>
         </div>
 
       </div>
