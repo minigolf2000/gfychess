@@ -52,7 +52,7 @@ export default function App() {
         <div id="right">
           <p className={"description " + classVisibleWhenPgnFilled}>Right-click to save or copy your GIF!</p>
           <Gif
-            fullPgn={pgn}
+            pgn={pgn}
             start={s}
             end={e}
             hoveredMoveIndex={hoveredMoveIndex}

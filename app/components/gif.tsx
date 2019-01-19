@@ -4,7 +4,7 @@ import { parseMoves } from "../lib/parse_moves"
 import { ChessGif } from "../lib/chessgif"
 
 interface Props {
-  fullPgn: string;
+  pgn: string;
   start: number;
   end: number;
   hoveredMoveIndex: number;
@@ -24,17 +24,17 @@ export class Gif extends React.Component<Props, State> {
   chessGif = new ChessGif();
 
   public componentDidMount() {
-    const moves = parseMoves(this.props.fullPgn);
+    const moves = parseMoves(this.props.pgn);
     this.updateAnimatedGif(moves)
   }
 
   public componentDidUpdate(prevProps: Props) {
-    if (prevProps.fullPgn != this.props.fullPgn ||
+    if (prevProps.pgn != this.props.pgn ||
         prevProps.start != this.props.start ||
         prevProps.end != this.props.end ||
         prevProps.hoveredMoveIndex != this.props.hoveredMoveIndex) {
 
-      const moves = parseMoves(this.props.fullPgn);
+      const moves = parseMoves(this.props.pgn);
       if (moves.length > 0 && this.props.hoveredMoveIndex == -1) {
         this.updateAnimatedGif(moves)
       } else if (this.props.hoveredMoveIndex >= 0) {
@@ -65,12 +65,13 @@ export class Gif extends React.Component<Props, State> {
   }
 
   public render() {
-    if (this.props.fullPgn == "") {
-      return null;
-    } else {
-      return (
-        <img id="animated-gif" className={(this.props.hoveredMoveIndex >= 0 ? "frozen" : "")} src={this.state.url} alt="" />
-      )
-    }
+    return (
+      <img
+        id="animated-gif"
+        className={(this.props.hoveredMoveIndex >= 0 ? "frozen" : "")}
+        src={this.state.url}
+        alt=""
+      />
+    )
   }
 }
