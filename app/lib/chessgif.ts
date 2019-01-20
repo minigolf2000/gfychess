@@ -140,7 +140,7 @@ export class ChessGif {
 
     while (this.moveIdx < this.moves.length && this.moveIdx <= end) {
       this.step();
-      if (this.moveIdx >= start) {
+      if (this.moveIdx > start) {
         await this.render();
       }
     }
