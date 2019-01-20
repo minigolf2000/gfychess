@@ -1,97 +1,108 @@
 import { useState, useEffect } from "react";
-import { parseMoves } from "../lib/parse_moves"
 import * as React from "react";
 
 interface Props {
-  fullPgn: string;
-  start: number;
-  end: number;
-  setStart(start: number): void;
-  setEnd(end: number): void;
-  onHover(i: number): void;
+  moves: string[];
+  range: number[];
+  setRange(range: number[]): void;
+  setHovering(value: boolean): void;
 }
 
 export function MoveSelector(props: Props) {
-  const { fullPgn, start, end, setStart, setEnd, onHover } = props;
-  const parsedMoves = parseMoves(fullPgn);
+  const { moves, range, setRange, setHovering } = props;
+
+  useEffect(() => {
+    setRange([0, moves.length - 1])
+    setGifStart(0)
+    setGifEnd(moves.length - 1)
+  }, [JSON.stringify(moves)])
+
+  const [gifStart, setGifStart] = useState(range[0])
+  const [gifEnd, setGifEnd] = useState(range[1])
+
+  const [currentHoveredIndex, setCurrentHoveredIndex] = useState(-1);
+  const [mouseDownIndex, setMouseDownIndex] = useState(-1);
 
   const className = (i: number) => {
     let className = [];
-    if (i == start) {
-      className.push("start");
+    let min = gifStart;
+    let max = gifEnd;
+    if (mouseDownIndex > -1) {
+      min = Math.min(currentHoveredIndex, mouseDownIndex)
+      max = Math.max(currentHoveredIndex, mouseDownIndex)
     }
-    if (i == end) {
-      className.push("end");
+
+    if (min <= i && i <= max) {
+      className.push("selected");
     }
-    if (start <= i && i <= end) {
-      className.push("between");
+    if (i == currentHoveredIndex) {
+      className.push("hovered");
     }
     return className.join(" ");
   }
 
-  const [startSelected, setStartSelected] = useState(false);
-
-  const onClick = (i: number) => {
-    if (i < start || !startSelected) {
-      setStart(i);
-      if (i > end) {
-        setEnd(i);
-      }
-      setStartSelected(true);
-    } else {
-      setEnd(i);
-      setStartSelected(false);
-    }
+  const onMouseEnter = (i: number) => {
+    setRange([i, i])
+    setHovering(true);
+    setCurrentHoveredIndex(i);
   }
 
   useEffect(() => {
-    if (!document.body.onmouseover) {
-      document.body.onmouseover = () => {
-        props.onHover(-1);
+    if (!document.body.onmouseup) {
+      document.body.onmouseup = () => {
+        setHovering(false);
       }
     }
   })
 
-  return (
-    <div id="move-selector">
-      <h3>Moves to include</h3>
-      <ol
-        onMouseOver={() => onHover(-1)}
-        onMouseOut={() => onHover(-1)}
-      >
-        {columns(parsedMoves).map((column: string[], rowNum: number) => (
-          <li key={rowNum}>
-            {move({san: column[0], className: className(rowNum * 2), onClick, onHover, i: rowNum * 2})}
-            {move({san: column[1], className: className(rowNum * 2 + 1), onClick, onHover, i: rowNum * 2 + 1})}
-          </li>
-        ))}
-      </ol>
-      <p>{end - start + 1} out of {parsedMoves.length} moves</p>
-    </div>
-  );
-}
-
-interface MoveProps {
-  san: string; // e.g. "e4", "kd6", "0-0"
-  className: string;
-  onClick: (i: number) => void;
-  onHover: (i: number) => void;
-  i: number;
-}
-
-function move(props: MoveProps) {
-  if (!props.san) {
-    return <span className="move disabled">&nbsp;</span>
+  const commit = () => {
+    if (mouseDownIndex > -1) {
+      setHovering(false);
+      const min = Math.min(mouseDownIndex, currentHoveredIndex)
+      const max = Math.max(mouseDownIndex, currentHoveredIndex)
+      setRange([min, max]);
+      setGifStart(min);
+      setGifEnd(max);
+      setMouseDownIndex(-1);
+    } else {
+      // user aborted selection. rollback
+      setRange([gifStart, gifEnd])
+      setHovering(false);
+      setMouseDownIndex(-1);
+    }
   }
 
   return (
-    <span
-      onClick={() => props.onClick(props.i)}
-      onMouseOver={(e) => {e.stopPropagation(); props.onHover(props.i)}}
-      onMouseOut={(e) => {e.stopPropagation()}}
-      className={"move " + props.className}>
-        <span className="flex">{props.san}</span>
-    </span>
+    <div id="move-selector">
+      <h3>Moves to include</h3>
+      <ol onMouseLeave={commit}>
+        {columns(moves).map((column: string[], rowNum: number) => (
+          <li key={rowNum}>
+          {
+            [0, 1].map((i: number) => {
+
+              if (!column[i]) {
+                return <span key={i} className="move disabled">&nbsp;</span>
+              } else {
+                return (
+                  <span
+                    onMouseEnter={(e: any) => { onMouseEnter(rowNum * 2 + i)}}
+                    onMouseDown={() => setMouseDownIndex(rowNum * 2 + i)}
+                    onMouseUp={commit}
+                    className={"move " + className(rowNum * 2 + i)}
+                    key={i}
+                  >
+                    <span className="flex">{column[i]}</span>
+                  </span>
+                );
+              }
+            })
+          }
+          </li>
+        ))}
+      </ol>
+      <p>{gifEnd - gifStart + 1} out of {moves.length} moves</p>
+    </div>
   );
 }
 

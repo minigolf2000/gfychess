@@ -1,61 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from "react";
+import { parseMoves } from "../lib/parse_moves"
 import { PGNInput } from "./pgn-input";
 import { MoveSelector } from "./move-selector";
 import { OptionForm } from "./option-form";
 import { Gif } from "./gif";
 
 export default function App() {
-  const [fullPgn, setPgn] = useState("");
-  const [start, setStart] = useState(-1);
-  const [end, setEnd] = useState(-1);
-  const [hoveredMoveIndex, setHoveredMoveIndex] = useState(-1);
+  const [pgn, setPgn] = useState("");
+  const [range, setRange] = useState([-1, -1]);
+  const [hovering, setHovering] = useState(false);
   const [flipBoard, setFlipBoard] = useState(false);
 
-  const setPgnAndReset = (pgn: string) => {
-    setPgn(pgn);
-    setStart(0);
-    setEnd(4);
+  let moves = parseMoves(pgn);
+  if (pgn == "") {
+    moves = ["e4", "e5", "Bc4", "Nc6", "Qh5", "Nf6??", "Qxf7#"];
   }
 
-  let pgn = fullPgn;
-  let s = start;
-  let e = end;
-  if (fullPgn == "") {
-    pgn = "1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#";
-    s = 0;
-    e = 6;
-  }
-
-  const classVisibleWhenPgnFilled = " " + (fullPgn == "" ? "hidden" : "visible")
-  const classVisibleWhenPgnEmpty = " " + (fullPgn != "" ? "hidden" : "visible")
+  const classVisibleWhenPgnFilled = " " + (pgn == "" ? "hidden" : "visible")
+  const classVisibleWhenPgnEmpty = " " + (pgn != "" ? "hidden" : "visible")
 
   return (
     <>
       <h1><img src="public/logo.svg" alt="Gfychess"/></h1>
       <h2>Create and share chess animated GIFs!</h2>
       <PGNInput
-        pgn={fullPgn}
-        setPgn={setPgnAndReset}
+        pgn={pgn}
+        setPgn={setPgn}
       />
       <div id="container">
         <div className={"left" + classVisibleWhenPgnFilled}>
           <MoveSelector
-            fullPgn={pgn}
-            start={s}
-            end={e}
-            setStart={setStart}
-            setEnd={setEnd}
-            onHover={setHoveredMoveIndex}
+            moves={moves}
+            range={range}
+            setRange={setRange}
+            setHovering={setHovering}
           />
         </div>
-        <div id="right">
+        <div id="right" className={hovering ? "frozen" : ""}>
           <p className={"description " + classVisibleWhenPgnFilled}>Right-click to save or copy your GIF!</p>
           <Gif
-            pgn={pgn}
-            start={s}
-            end={e}
-            hoveredMoveIndex={hoveredMoveIndex}
+            moves={moves}
+            range={range}
             flipBoard={flipBoard}
           />
           <p className={"description example-footer " + (classVisibleWhenPgnEmpty)}>Example</p>

@@ -1,13 +1,10 @@
-import { useState, useEffect } from "react";
 import * as React from "react";
 import { parseMoves } from "../lib/parse_moves"
 import { ChessGif } from "../lib/chessgif"
 
 interface Props {
-  pgn: string;
-  start: number;
-  end: number;
-  hoveredMoveIndex: number;
+  moves: string[];
+  range: number[];
   flipBoard: boolean;
 }
 
@@ -24,53 +21,31 @@ export class Gif extends React.Component<Props, State> {
   chessGif = new ChessGif();
 
   public componentDidMount() {
-    const moves = parseMoves(this.props.pgn);
-    this.updateAnimatedGif(moves)
+    this.updateAnimatedGif()
   }
 
-  public componentDidUpdate(prevProps: Props) {
-    if (prevProps.pgn != this.props.pgn ||
-        prevProps.start != this.props.start ||
-        prevProps.end != this.props.end ||
-        prevProps.hoveredMoveIndex != this.props.hoveredMoveIndex) {
-
-      const moves = parseMoves(this.props.pgn);
-      if (moves.length > 0 && this.props.hoveredMoveIndex == -1) {
-        this.updateAnimatedGif(moves)
-      } else if (this.props.hoveredMoveIndex >= 0) {
-        this.updateFreezeFrameGif()
-      }
+  public async componentDidUpdate(prevProps: Props) {
+    if (JSON.stringify(prevProps.moves) != JSON.stringify(this.props.moves) ||
+        prevProps.range[0] != this.props.range[0] ||
+        prevProps.range[1] != this.props.range[1]) {
+      this.updateAnimatedGif()
     }
   }
 
-  private async updateAnimatedGif(moves: string[]) {
-    this.chessGif.loadMoves(moves);
-    await this.chessGif.createGif(this.props.start, this.props.end);
+  public async updateAnimatedGif() {
+    if (this.props.moves.length > 0) {
+      this.chessGif.loadMoves(this.props.moves);
+      await this.chessGif.createGif(this.props.range[0], this.props.range[1]);
 
-    const url = this.chessGif.asBase64Gif();
-    this.setState({url})
-  }
-
-  private async updateFreezeFrameGif() {
-    this.chessGif.reset();
-    let i = 0;
-    while (i <= this.props.hoveredMoveIndex) {
-      this.chessGif.step();
-      i++;
+      const url = this.chessGif.asBase64Gif();
+      this.setState({url})
     }
-    await this.chessGif.render();
-
-    const url = this.chessGif.asBase64Gif();
-    this.setState({url})
   }
 
   public render() {
     return (
       <img
-        id="animated-gif"
-        className={(this.props.hoveredMoveIndex >= 0 ? "frozen" : "")}
-        src={this.state.url}
-        alt=""
+        id="animated-gif" src={this.state.url} alt=""
       />
     )
   }
