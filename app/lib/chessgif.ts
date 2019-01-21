@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 // import * as fs from 'fs';
 import { parseMoves } from './parse_moves';
 
-const SQUARE_SIZE = 48;
+const SQUARE_SIZE = 80;
 const BOARD_SIZE = SQUARE_SIZE * 8;
 const COLOR_OFFSET: {[side: string]: number} = {
   b: 0,
@@ -16,24 +16,7 @@ const PIECE_OFFSET: {[piece: string]: number} = {
   Q: 4,
   R: 5,
 }
-const PALETTE = [
-  [244, 217, 176],
-  [189, 134, 92],
-  [0, 0, 0],
-  [255, 255, 255],
-  [236, 236, 236],
-  [128, 128, 128],
-  [223, 223, 223],
-  [96, 96, 96],
-  [177, 177, 177],
-  [64, 64, 64],
-  [59, 59, 59],
-  [213, 190, 154],
-  [159, 159, 159],
-  [89, 89, 89],
-  [32, 32, 32],
-  [16, 16, 16],
-]
+let PALETTE = new Uint8Array(1);
 const FILES: {[file: string]: number} = {
   a: 0,
   b: 1,
@@ -45,10 +28,8 @@ const FILES: {[file: string]: number} = {
   h: 7,
 }
 const ROWS = [new Uint8Array(BOARD_SIZE * SQUARE_SIZE), new Uint8Array(BOARD_SIZE * SQUARE_SIZE)];
-const NUM_COLORS = PALETTE.length > 16 ? 256 :
-  PALETTE.length > 4 ? 16 :
-  PALETTE.length > 2 ? 4 : 2;
-const COLOR_BITS = Math.log2(NUM_COLORS);
+let NUM_COLORS = 0;
+let COLOR_BITS = 0;
 
 const PIECE_URL = "public/piece_set.dat";
 let PIECE_DATA: Uint8Array = null;
@@ -125,7 +106,15 @@ export class ChessGif {
       const resp = await fetch(PIECE_URL);
       body = await resp.arrayBuffer();
     }
+
     PIECE_DATA = new Uint8Array(body);
+    const paletteSize = PIECE_DATA[0];
+    PALETTE = PIECE_DATA.subarray(1, paletteSize * 3 + 1);
+    PIECE_DATA = PIECE_DATA.subarray(paletteSize * 3 + 1);
+    NUM_COLORS = PALETTE.length > 16 ? 256 :
+      PALETTE.length > 4 ? 16 :
+      PALETTE.length > 2 ? 4 : 2;
+    COLOR_BITS = Math.log2(NUM_COLORS);
   }
 
   public loadMoves(moves: string[]) {
@@ -338,17 +327,7 @@ export class ChessGif {
     const table = this.gif.data;
     const baseIdx = this.gif.idx;
     table[baseIdx] = 240 + COLOR_BITS - 1;
-    for (let i=0; i<NUM_COLORS; i++) {
-      let color = [0, 0, 0];
-      if (i < PALETTE.length) {
-        color = PALETTE[i];
-      }
-      const idx = baseIdx + i*3 + 3;
-      table[idx] = color[0];
-      table[idx+1] = color[1];
-      table[idx+2] = color[2];
-    }
-
+    table.set(PALETTE, baseIdx + 3);
     this.gif.idx += tableSize;
   }
 
@@ -501,7 +480,7 @@ export class ChessGif {
 
       const yOff = (COLOR_OFFSET[color] + PIECE_OFFSET[pType]) * SQUARE_SIZE;
       for (let i=0; i<SQUARE_SIZE; i++) {
-        const srcY = (yOff + i) * SQUARE_SIZE * 2;
+        const srcY = (yOff + i) * SQUARE_SIZE * 4;
         const boardY = (y*SQUARE_SIZE + i) * BOARD_SIZE;
         for (let j=0; j<SQUARE_SIZE; j++) {
           this.boardRaster[boardY + j + x*SQUARE_SIZE] = PIECE_DATA[srcY + xOff + j];
@@ -537,21 +516,3 @@ export class ChessGif {
     this.dirtyBoard = false;
   }
 }
-
-export async function example() {
-  try {
-    const chessGif = new ChessGif();
-    const moves = parseMoves("1.e4 {[%clk 0:02:59]} e5 {[%clk 0:02:59]} 2.Nf3 {[%clk 0:02:58]} Nc6 {[%clk 0:02:59]} 3.Bb5 {[%clk 0:02:58]} Nf6 {[%clk 0:02:59]} 4.d3 {[%clk 0:02:57]} Bc5 {[%clk 0:02:57]} 5.c3 {[%clk 0:02:57]} O-O {[%clk 0:02:56]} 6.O-O {[%clk 0:02:56]} Re8 {[%clk 0:02:56]} 7.h3 {[%clk 0:02:54]} a6 {[%clk 0:02:55]} 8.Ba4 {[%clk 0:02:53]} d5 {[%clk 0:02:54]} 9.Nbd2 {[%clk 0:02:51]} h6 {[%clk 0:02:53]} 10.Re1 {[%clk 0:02:50]} b5 {[%clk 0:02:51]} 11.Bb3 {[%clk 0:02:48]} d4 {[%clk 0:02:51]} 12.Nf1 {[%clk 0:02:43]} Be6 {[%clk 0:02:49]} 13.Ng3 {[%clk 0:02:38]} Bxb3 {[%clk 0:02:43]} 14.axb3 {[%clk 0:02:38]} Qd7 {[%clk 0:02:40]} 15.b4 {[%clk 0:02:24]} Bf8 {[%clk 0:02:37]} 16.Qe2 {[%clk 0:02:22]} dxc3 {[%clk 0:02:22]} 17.bxc3 {[%clk 0:02:20]} a5 {[%clk 0:02:20]} 18.bxa5 {[%clk 0:02:16]} Nxa5 {[%clk 0:02:20]} 19.Be3 {[%clk 0:02:11]} c5 {[%clk 0:02:17]} 20.Red1 {[%clk 0:02:06]} Qc6 {[%clk 0:02:08]} 21.Qc2 {[%clk 0:01:45]} b4 {[%clk 0:02:02]} 22.Nxe5 {[%clk 0:01:30]} b3 {[%clk 0:01:53]} 23.Qxb3 {[%clk 0:01:03]} Nxb3 {[%clk 0:01:49]}  0-1");
-    await chessGif.initPromise;
-    const begin = Date.now();
-    chessGif.loadMoves(moves);
-    // const gif = await chessGif.createGif();
-    const end = Date.now();
-
-    // fs.writeFile("example.gif", gif, (err) => console.log(`Time elapsed: ${end - begin}ms`));
-  } catch(e) {
-    console.log(e);
-  }
-}
-
-// example();
