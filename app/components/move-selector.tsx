@@ -8,6 +8,9 @@ interface Props {
   setHovering(value: boolean): void;
 }
 
+let dragPaneImageRef: HTMLDivElement = null
+let cachedDragOverBounds: ClientRect = null
+
 export function MoveSelector(props: Props) {
   const { moves, range, setRange, setHovering } = props;
 
@@ -32,6 +35,12 @@ export function MoveSelector(props: Props) {
       max = Math.max(currentHoveredIndex, mouseDownIndex)
     }
 
+    if (i == min) {
+      className.push("start");
+    }
+    if (i == max) {
+      className.push("end");
+    }
     if (min <= i && i <= max) {
       className.push("selected");
     }
@@ -72,6 +81,71 @@ export function MoveSelector(props: Props) {
     }
   }
 
+  const [reorderingIndex, setReorderingIndex] = useState(-1)
+  const [dragOverIndex, setDragOverIndex] = useState(-1)
+  const [isDraggingBefore, setIsDraggingBefore] = useState(false)
+
+
+  const onDragStart = (i: number, e: React.DragEvent<HTMLSpanElement>) => {
+    // This removes the default visual copy of the element and the copy cursor
+    // note:  setData is needed for Firefox to recognize drag events
+    // as any is needed because some tslint is not happy with the definition of setDragImage
+    let event = e as any
+    // event.dataTransfer.setData('text', nodeId)
+    event.dataTransfer.dropEffect = 'none'
+    // event.dataTransfer.dropEffect = 'move'
+    event.dataTransfer.effectAllowed = 'move'
+    if (dragPaneImageRef) {
+      event.dataTransfer.setDragImage(dragPaneImageRef, 10, 10)
+    }
+    console.log(i)
+    setReorderingIndex(i);
+    setDragOverIndex(-1);
+  }
+
+
+
+  const onDragOver = (i: number, e: React.MouseEvent<HTMLSpanElement>) => {
+    e.preventDefault();
+
+    const htmlElem = e.target as HTMLSpanElement
+    if (dragOverIndex !== i) {
+      cachedDragOverBounds = htmlElem.getBoundingClientRect()
+    }
+
+    let offsetX = e.clientX - cachedDragOverBounds.left
+    if (reorderingIndex > -1) {
+      if (i !== reorderingIndex) {
+        setDragOverIndex(i)
+        setIsDraggingBefore(offsetX < (cachedDragOverBounds.width / 2))
+      }
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+
+  const onDragLeave = (i: number, e: React.MouseEvent<HTMLSpanElement>) => {
+    if (dragOverIndex === i) {
+      setDragOverIndex(-1);
+    }
+    e.stopPropagation()
+  }
+
+  const onDragDrop = (i: number, e: React.MouseEvent<HTMLSpanElement>) => {
+    console.log(reorderingIndex)
+    if (reorderingIndex > -1) {
+      if (isDraggingBefore) {
+        console.log("yes")
+      } else {
+        console.log("no");
+      }
+      setReorderingIndex(-1);
+      setDragOverIndex(-1);
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+
   return (
     <div id="move-selector">
       <h3>Moves to include</h3>
@@ -79,21 +153,34 @@ export function MoveSelector(props: Props) {
         {columns(moves).map((column: string[], rowNum: number) => (
           <li key={rowNum}>
           {
-            [0, 1].map((i: number) => {
-
-              if (!column[i]) {
-                return <span key={i} className="move disabled">&nbsp;</span>
+            [0, 1].map((offset: number) => {
+              const i = rowNum * 2 + offset
+              if (!column[offset]) {
+                return <span key={offset} className="move disabled">&nbsp;</span>
               } else {
                 return (
-                  <span
-                    onMouseEnter={(e: any) => { onMouseEnter(rowNum * 2 + i)}}
-                    onMouseDown={() => setMouseDownIndex(rowNum * 2 + i)}
-                    onMouseUp={commit}
-                    className={"move " + className(rowNum * 2 + i)}
-                    key={i}
-                  >
-                    <span className="flex">{column[i]}</span>
-                  </span>
+                  <React.Fragment key={offset}>
+                    {className(i).includes("start") && (
+                      <span className="drag-handle" draggable onDragStart={(e) => onDragStart(i, e)}></span>
+                    )}
+
+                    <span
+                      onDragOver={(e) => onDragOver(i, e)}
+                      onDragLeave={(e) => onDragLeave(i, e)}
+                      onDrop={(e) => onDragDrop(i, e)}
+                      onMouseEnter={(e: any) => { onMouseEnter(i)}}
+                      onMouseDown={() => setMouseDownIndex(i)}
+                      onMouseUp={commit}
+                      className={"move " + className(i)}
+                    >
+                      <span className="flex">{column[offset]}</span>
+                    </span>
+
+                    {className(i).includes("end") && (
+                      <span className="drag-handle" draggable onDragStart={(e) => onDragStart(i, e)}></span>
+                    )}
+
+                  </React.Fragment>
                 );
               }
             })

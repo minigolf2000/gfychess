@@ -104,6 +104,26 @@ textarea::placeholder {
   font-size: .7rem;
 }
 
+.drag-handle {
+  background-color: rgb(70, 136, 241);
+  width: 3px;
+  height: 30px;
+  display: inline-block;
+  position: absolute;
+}
+
+.drag-handle::before {
+  content: ".";
+  color: rgb(70, 136, 241);
+  width: 9px;
+  height: 9px;
+  display: inline-block;
+  background-color: rgb(70, 136, 241);
+  border-radius: 5px;
+  position: relative;
+  left: -3px;
+
+}
 #move-selector .move {
   display: inline-block;
   padding: 5px 0px;
