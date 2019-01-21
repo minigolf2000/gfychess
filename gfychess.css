@@ -199,6 +199,8 @@ textarea::placeholder {
 
 #animated-gif {
   border: 2px solid white;
+  height: 384px;
+  width: 384px;
 }
 
 .frozen #animated-gif {
