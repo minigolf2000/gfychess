@@ -54,7 +54,9 @@ export class ChessGif {
   board: string[][];
   initPromise: Promise<void>;
   boardRaster: Uint8Array;
-  dirtySquares: Set<number[]>;
+  dirtySquares: Set<number>;
+  recentDirty: Set<number>;
+  prevDirty: Set<number>;
   dirtyBoard: boolean;
   boardCache: {[key: string]: Uint8Array};
   sequence: Uint8Array;
@@ -77,6 +79,8 @@ export class ChessGif {
     this.moveIdx = 0;
     this.dirtyBoard = true;
     this.dirtySquares = new Set();
+    this.prevDirty = new Set();
+    this.recentDirty = new Set();
     this.board = [
       ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
       ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
@@ -152,6 +156,7 @@ export class ChessGif {
     let yMax = 0;
     let xMin = 8;
     let xMax = 0;
+    const selectedOffsets: {[y: number]: string} = {};
 
     if (this.gif.idx === 0) {
       // if gif.idx is 0 we haven't started a gif yet, do that
@@ -165,9 +170,10 @@ export class ChessGif {
       xMin = 0;
       xMax = 8;
     } else {
-      for (const affected of this.dirtySquares) {
-        const y = affected[0];
-        const x = affected[1];
+      for (const affected of this.prevDirty) {
+        if (this.dirtySquares.has(affected)) continue;
+        const x = affected % 8;
+        const y = (affected - x) / 8;
         this.drawSquare(y, x);
 
         if (y+1 > yMax) yMax = y+1;
@@ -175,7 +181,29 @@ export class ChessGif {
         if (x+1 > xMax) xMax = x+1;
         if (x < xMin) xMin = x;
       }
+      for (const affected of this.dirtySquares) {
+        const x = affected % 8;
+        const y = (affected - x) / 8;
+        this.drawSquare(y, x, true);
+
+        if (y+1 > yMax) yMax = y+1;
+        if (y < yMin) yMin = y;
+        if (x+1 > xMax) xMax = x+1;
+        if (x < xMin) xMin = x;
+      }
+      for (const affected of this.dirtySquares) {
+        const x = affected % 8;
+        const y = (affected - x) / 8;
+        const xStr = (x - xMin).toString();
+        if (selectedOffsets[y] == null) {
+          selectedOffsets[y] = xStr;
+        } else {
+          selectedOffsets[y] += xStr;
+        }
+      }
+
       this.dirtySquares.clear();
+      this.prevDirty = this.recentDirty;
     }
 
     if (xMin === 8) return;
@@ -187,7 +215,7 @@ export class ChessGif {
 
     for (let i=yMin; i<yMax; i++) {
       const skew = (i + xMin) & 1;
-      const key = this.board[i].slice(xMin, xMax).join('') + skew.toString();
+      const key = this.board[i].slice(xMin, xMax).join('') + skew.toString() + 's' + selectedOffsets[i];
       if (this.boardCache[key] === undefined) {
         const region = this.drawRegion(i, xMin, xMax);
         this.boardCache[key] = this.lzw(region);
@@ -240,13 +268,18 @@ export class ChessGif {
       this.board[rank][files[1]] = ' ';
       this.board[rank][files[2]] = king;
       this.board[rank][files[3]] = rook;
-      for (const file of files) this.dirtySquares.add([rank, file]);
+      this.recentDirty = new Set();
+      for (const file of files) {
+        this.dirtySquares.add(rank*8 + file);
+        this.recentDirty.add(rank*8 + file);
+      }
     } else if (move.length === 4 && move[2] === '=') {
       // pawn promotion
       piece = side + move[3];
       target = [8 - parseInt(move[1]), FILES[move[0]]];
       this.board[target[0]][target[1]] = piece;
-      this.dirtySquares.add(target);
+      this.dirtySquares.add(target[0]*8 + target[1]);
+      this.recentDirty = new Set([target[0]*8 + target[1]]);
     } else if (move.length === 3 || move.length === 4) {
       piece = move[0];
       if (piece < 'A') return; // things like results
@@ -304,8 +337,9 @@ export class ChessGif {
 
         this.board[target[0]][target[1]] = piece;
         this.board[y][x] = ' ';
-        this.dirtySquares.add([y, x]);
-        this.dirtySquares.add(target);
+        this.dirtySquares.add(y*8 + x);
+        this.dirtySquares.add(target[0]*8 + target[1]);
+        this.recentDirty = new Set([y*8 + x, target[0]*8 + target[1]]);
       }
     }
   }
@@ -462,9 +496,9 @@ export class ChessGif {
     this.gif.idx++;
   }
 
-  drawSquare(y: number, x: number) {
+  drawSquare(y: number, x: number, highlighted = false) {
     const piece = this.board[y][x];
-    const bg = (y + x) % 2;
+    const bg = (y + x) % 2 + (highlighted ? 2 : 0);
     const xOff = bg * SQUARE_SIZE;
 
     if (piece === ' ') {
