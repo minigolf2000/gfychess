@@ -160,7 +160,7 @@ export class ChessGif {
     let yMax = 0;
     let xMin = 8;
     let xMax = 0;
-    const selectedOffsets: {[y: number]: string} = {};
+    const selectedOffsets: {[y: number]: number} = {};
 
     if (this.gif.idx === 0) {
       // if gif.idx is 0 we haven't started a gif yet, do that
@@ -203,11 +203,11 @@ export class ChessGif {
           y = 7 - y;
         }
 
-        const xStr = (x - xMin).toString();
+        const xAdd = 1 << (x - xMin);
         if (selectedOffsets[y] == null) {
-          selectedOffsets[y] = xStr;
+          selectedOffsets[y] = xAdd;
         } else {
-          selectedOffsets[y] += xStr;
+          selectedOffsets[y] += xAdd;
         }
       }
 
@@ -226,7 +226,7 @@ export class ChessGif {
     const boardMax = flipped ? 8 - xMin : xMax;
     for (let i=yMin; i<yMax; i++) {
       const skew = (i + xMin) & 1;
-      const key = this.board[flipped ? 7 - i : i].slice(boardMin, boardMax).join('') + skew.toString() + 's' + selectedOffsets[i];
+      const key = this.board[flipped ? 7 - i : i].slice(boardMin, boardMax).join('') + skew.toString() + 's' + (selectedOffsets[i] ? selectedOffsets[i].toString() : '');
       if (this.boardCache[key] === undefined) {
         const region = this.drawRegion(i, xMin, xMax);
         this.boardCache[key] = this.lzw(region);
@@ -256,9 +256,12 @@ export class ChessGif {
     move = move.replace(new RegExp(/[#!\?\+x]/, 'g'), '');
     let target: number[] = null;
     let piece: string = null;
+    let search: string = null;
     let rankConstraint: number = null;
     let fileConstraint: number = null;
     let candidates: number[][] = [];
+
+    this.recentDirty = new Set();
 
     if (move.length === 2) {
       target = [8 - parseInt(move[1]), FILES[move[0]]];
@@ -279,7 +282,6 @@ export class ChessGif {
       this.board[rank][files[1]] = ' ';
       this.board[rank][files[2]] = king;
       this.board[rank][files[3]] = rook;
-      this.recentDirty = new Set();
       for (const file of files) {
         this.dirtySquares.add(rank*8 + file);
         this.recentDirty.add(rank*8 + file);
@@ -287,10 +289,15 @@ export class ChessGif {
     } else if (move.length === 4 && move[2] === '=') {
       // pawn promotion
       piece = side + move[3];
+      search = side + 'P';
       target = [8 - parseInt(move[1]), FILES[move[0]]];
-      this.board[target[0]][target[1]] = piece;
-      this.dirtySquares.add(target[0]*8 + target[1]);
-      this.recentDirty = new Set([target[0]*8 + target[1]]);
+      candidates = [[target[0] + offset, target[1]]];
+    } else if (move.length === 5 && move[3] === '=') {
+      // pawn capture + promote
+      piece = side + move[4];
+      search = side + 'P';
+      target = [8 - parseInt(move[2]), FILES[move[1]]];
+      candidates = [[target[0] + offset, FILES[move[0]]]];
     } else if (move.length === 3 || move.length === 4) {
       piece = move[0];
       if (piece < 'A') return; // things like results
@@ -315,6 +322,11 @@ export class ChessGif {
       } else if (piece === 'K') {
         candidates = [[r-1,f-1],[r-1,f],[r-1,f+1],[r,f-1],[r,f+1],[r+1,f-1],[r+1,f],[r+1,f+1]];
       } else { // this is a pawn so the ${piece} variable actually refers to a file
+        if (this.board[r][f] === ' ') { // en passant
+          this.board[r + offset][f] = ' ';
+          this.dirtySquares.add((r + offset) * 8 + f);
+          this.recentDirty.add((r + offset) * 8 + f);
+        }
         candidates = [[r+offset,FILES[piece]]];
         piece = 'P';
       }
@@ -338,11 +350,13 @@ export class ChessGif {
       candidates = [[8 - parseInt(move[2]), FILES[move[1]]]];
     } else return; // unknown move
 
+    if (search == null) search = piece;
+
     for (const c of candidates) {
       const y = c[0];
       const x = c[1];
 
-      if (y < 8 && y >= 0 && x < 8 && x >= 0 && this.board[y][x] === piece) {
+      if (y < 8 && y >= 0 && x < 8 && x >= 0 && this.board[y][x] === search) {
         if (rankConstraint != null && rankConstraint != y) continue;
         if (fileConstraint != null && fileConstraint != x) continue;
 
