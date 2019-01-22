@@ -182,6 +182,17 @@ export class ChessGif {
         if (x < xMin) xMin = x;
       }
       for (const affected of this.dirtySquares) {
+        if (this.recentDirty.has(affected)) continue;
+        const x = affected % 8;
+        const y = (affected - x) / 8;
+        this.drawSquare(y, x);
+
+        if (y+1 > yMax) yMax = y+1;
+        if (y < yMin) yMin = y;
+        if (x+1 > xMax) xMax = x+1;
+        if (x < xMin) xMin = x;
+      }
+      for (const affected of this.recentDirty) {
         const x = affected % 8;
         const y = (affected - x) / 8;
         this.drawSquare(y, x, true);
