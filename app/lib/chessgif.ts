@@ -81,6 +81,7 @@ export class ChessGif {
     this.dirtySquares = new Set();
     this.prevDirty = new Set();
     this.recentDirty = new Set();
+    this.boardCache = {};
     this.board = [
       ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
       ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
@@ -126,15 +127,15 @@ export class ChessGif {
     this.reset();
   }
 
-  public async createGif(start: number, end: number): Promise<Uint8Array> {
+  public async createGif(start: number, end: number, flipped = false): Promise<Uint8Array> {
     if (start == 0) {
-      await this.render();
+      await this.render(flipped);
     }
 
     while (this.moveIdx < this.moves.length && this.moveIdx <= end) {
       this.step();
       if (this.moveIdx > start) {
-        await this.render();
+        await this.render(flipped);
       }
     }
 
@@ -149,7 +150,7 @@ export class ChessGif {
     }
   }
 
-  public async render() {
+  public async render(flipped = false) {
     await this.initPromise;
 
     let yMin = 8;
@@ -164,47 +165,41 @@ export class ChessGif {
       this.globalColorTable();
     }
     if (this.dirtyBoard) {
-      this.drawBoard();
+      this.drawBoard(flipped);
       yMin = 0;
       yMax = 8;
       xMin = 0;
       xMax = 8;
     } else {
-      for (const affected of this.prevDirty) {
-        if (this.dirtySquares.has(affected)) continue;
-        const x = affected % 8;
-        const y = (affected - x) / 8;
-        this.drawSquare(y, x);
+      const drawSquares = (dirty: Set<number>, ignore: Set<number>, highlighted: boolean) => {
+        for (const affected of dirty) {
+          if (ignore && ignore.has(affected)) continue;
+          let x = affected % 8;
+          let y = (affected - x) / 8;
+          this.drawSquare(y, x, flipped, highlighted);
+          if (flipped) {
+            x = 7 - x;
+            y = 7 - y;
+          }
 
-        if (y+1 > yMax) yMax = y+1;
-        if (y < yMin) yMin = y;
-        if (x+1 > xMax) xMax = x+1;
-        if (x < xMin) xMin = x;
+          if (y+1 > yMax) yMax = y+1;
+          if (y < yMin) yMin = y;
+          if (x+1 > xMax) xMax = x+1;
+          if (x < xMin) xMin = x;
+        }
       }
-      for (const affected of this.dirtySquares) {
-        if (this.recentDirty.has(affected)) continue;
-        const x = affected % 8;
-        const y = (affected - x) / 8;
-        this.drawSquare(y, x);
+      drawSquares(this.prevDirty, this.dirtySquares, false);
+      drawSquares(this.dirtySquares, this.recentDirty, false);
+      drawSquares(this.recentDirty, null, true);
 
-        if (y+1 > yMax) yMax = y+1;
-        if (y < yMin) yMin = y;
-        if (x+1 > xMax) xMax = x+1;
-        if (x < xMin) xMin = x;
-      }
       for (const affected of this.recentDirty) {
-        const x = affected % 8;
-        const y = (affected - x) / 8;
-        this.drawSquare(y, x, true);
+        let x = affected % 8;
+        let y = (affected - x) / 8;
+        if (flipped) {
+          x = 7 - x;
+          y = 7 - y;
+        }
 
-        if (y+1 > yMax) yMax = y+1;
-        if (y < yMin) yMin = y;
-        if (x+1 > xMax) xMax = x+1;
-        if (x < xMin) xMin = x;
-      }
-      for (const affected of this.dirtySquares) {
-        const x = affected % 8;
-        const y = (affected - x) / 8;
         const xStr = (x - xMin).toString();
         if (selectedOffsets[y] == null) {
           selectedOffsets[y] = xStr;
@@ -224,9 +219,11 @@ export class ChessGif {
     const delay = this.moveIdx === this.moves.length ? 200 : 100;
     this.startImage(xMin * SQUARE_SIZE, yMin * SQUARE_SIZE, width, height, delay);
 
+    const boardMin = flipped ? 8 - xMax : xMin;
+    const boardMax = flipped ? 8 - xMin : xMax;
     for (let i=yMin; i<yMax; i++) {
       const skew = (i + xMin) & 1;
-      const key = this.board[i].slice(xMin, xMax).join('') + skew.toString() + 's' + selectedOffsets[i];
+      const key = this.board[flipped ? 7 - i : i].slice(boardMin, boardMax).join('') + skew.toString() + 's' + selectedOffsets[i];
       if (this.boardCache[key] === undefined) {
         const region = this.drawRegion(i, xMin, xMax);
         this.boardCache[key] = this.lzw(region);
@@ -507,8 +504,15 @@ export class ChessGif {
     this.gif.idx++;
   }
 
-  drawSquare(y: number, x: number, highlighted = false) {
-    const piece = this.board[y][x];
+  drawSquare(y: number, x: number, flipped: boolean, highlighted = false) {
+    const bX = x;
+    const bY = y;
+    if (flipped) {
+      y = 7 - y;
+      x = 7 - x;
+    }
+
+    const piece = this.board[bY][bX];
     const bg = (y + x) % 2 + (highlighted ? 2 : 0);
     const xOff = bg * SQUARE_SIZE;
 
@@ -551,11 +555,13 @@ export class ChessGif {
     return this.sequence.subarray(0, space);
   }
 
-  drawBoard() {
+  drawBoard(flipped: boolean) {
     for (let i=0; i<8; i++) {
       this.boardRaster.set(ROWS[i&1], i * BOARD_SIZE * SQUARE_SIZE);
+    }
+    for (let i=0; i<8; i++) {
       for (let j=0; j<8; j++) {
-        this.drawSquare(i, j);
+        this.drawSquare(i, j, flipped);
       }
     }
     this.dirtyBoard = false;
