@@ -81,7 +81,6 @@ export class ChessGif {
     this.dirtySquares = new Set();
     this.prevDirty = new Set();
     this.recentDirty = new Set();
-    this.boardCache = {};
     this.board = [
       ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
       ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
@@ -92,6 +91,10 @@ export class ChessGif {
       ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
       ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
     ];
+  }
+
+  public resetCache() {
+    this.boardCache = {};
   }
 
   asArrayGif(): Uint8Array {
