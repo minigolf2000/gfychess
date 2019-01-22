@@ -224,9 +224,10 @@ export class ChessGif {
 
     const boardMin = flipped ? 8 - xMax : xMin;
     const boardMax = flipped ? 8 - xMin : xMax;
+    const flippedFlag = flipped ? 'f' : 's';
     for (let i=yMin; i<yMax; i++) {
       const skew = (i + xMin) & 1;
-      const key = this.board[flipped ? 7 - i : i].slice(boardMin, boardMax).join('') + skew.toString() + 's' + (selectedOffsets[i] ? selectedOffsets[i].toString() : '');
+      const key = this.board[flipped ? 7 - i : i].slice(boardMin, boardMax).join('') + skew.toString() + flippedFlag + (selectedOffsets[i] ? selectedOffsets[i].toString() : '');
       if (this.boardCache[key] === undefined) {
         const region = this.drawRegion(i, xMin, xMax);
         this.boardCache[key] = this.lzw(region);
