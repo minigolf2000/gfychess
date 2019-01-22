@@ -1,5 +1,6 @@
 function cleanMoves(moves: string): string {
   moves = moves.replace(new RegExp("\n", 'g'), " ");
+  moves = moves.replace(new RegExp("\\d+\\.\\.\\.", 'g'), "");
   let ret = '';
   let inComment = false;
   let inTag = false;
