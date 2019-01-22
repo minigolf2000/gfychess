@@ -27,7 +27,8 @@ export class Gif extends React.Component<Props, State> {
   public async componentDidUpdate(prevProps: Props) {
     if (JSON.stringify(prevProps.moves) != JSON.stringify(this.props.moves) ||
         prevProps.range[0] != this.props.range[0] ||
-        prevProps.range[1] != this.props.range[1]) {
+        prevProps.range[1] != this.props.range[1] ||
+        prevProps.flipBoard != this.props.flipBoard) {
       this.updateAnimatedGif()
     }
   }
@@ -35,7 +36,7 @@ export class Gif extends React.Component<Props, State> {
   public async updateAnimatedGif() {
     if (this.props.moves.length > 0) {
       this.chessGif.loadMoves(this.props.moves);
-      await this.chessGif.createGif(this.props.range[0], this.props.range[1]);
+      await this.chessGif.createGif(this.props.range[0], this.props.range[1], this.props.flipBoard);
 
       const url = this.chessGif.asBase64Gif();
       this.setState({url})
