@@ -25,6 +25,10 @@ export class Gif extends React.Component<Props, State> {
   }
 
   public async componentDidUpdate(prevProps: Props) {
+    if (JSON.stringify(prevProps.moves) != JSON.stringify(this.props.moves)) {
+      this.chessGif.resetCache();
+    }
+
     if (JSON.stringify(prevProps.moves) != JSON.stringify(this.props.moves) ||
         prevProps.range[0] != this.props.range[0] ||
         prevProps.range[1] != this.props.range[1] ||
