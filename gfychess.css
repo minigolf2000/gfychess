@@ -107,7 +107,7 @@ textarea::placeholder {
 .drag-handle {
   background-color: rgb(70, 136, 241);
   width: 3px;
-  height: 30px;
+  height: 35px;
   display: inline-block;
   position: absolute;
 }
@@ -138,11 +138,12 @@ textarea::placeholder {
 
 #move-selector .flex {
   width: 60px;
-  border: 2px solid transparent;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
 }
 
 #move-selector .move.hovered:hover .flex {
-  border: 2px dotted rgb(149, 82, 238);
+  border-bottom: 5px solid #EEC54C;
   /* border: 2px dotted rgb(70, 136, 241); */
 }
 
@@ -198,15 +199,13 @@ textarea::placeholder {
 }
 
 #animated-gif {
-  border: 2px solid white;
+  border: 5px solid white;
   height: 384px;
   width: 384px;
 }
 
 .frozen #animated-gif {
-  /* border: 2px dotted rgb(70, 136, 241); */
-  border: 2px dotted rgb(149, 82, 238);
-  /* border-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAACASURBVHgBzZG9DYAgEEYPEqwdwAI30FHcxMaEHWzcxFF0AykcgFriD0cMYoLQetWDfJd7uQPwircLjzFxH91aUQLjsekaGOMhJq/gCQ2+Qyz7YqZmRJ4KgtbKaXBhnHYWbzIa1AqngqgxlOonGsRqZGy6x8kQ49qeywnvWh+MdQHHO4PtxHSO2wAAAABJRU5ErkJggg==) 3 repeat; */
+  border: 5px solid #EEC54C;
 }
 
 #option-form {
