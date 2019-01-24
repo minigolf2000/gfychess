@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-// import * as fs from 'fs';
 import { parseMoves } from './parse_moves';
 
 const SQUARE_SIZE = 80;
@@ -107,13 +105,8 @@ export class ChessGif {
     for (let i=0; i<8*SQUARE_SIZE; i++) ROWS[1 - (i&1)].set(ones, i*SQUARE_SIZE);
 
     let body: ArrayBuffer = null;
-    try {
-      const resp = await window.fetch(PIECE_URL);
-      body = await resp.arrayBuffer();
-    } catch {
-      const resp = await fetch(PIECE_URL);
-      body = await resp.arrayBuffer();
-    }
+    const resp = await window.fetch(PIECE_URL);
+    body = await resp.arrayBuffer();
 
     PIECE_DATA = new Uint8Array(body);
     const paletteSize = PIECE_DATA[0];
@@ -146,11 +139,7 @@ export class ChessGif {
   }
 
   public asBase64Gif(): string {
-    try {
-      return "data:image/gif;base64, " + Buffer.from(this.gif.data.subarray(0, this.gif.idx)).toString('base64');
-    } catch {
-      return window.URL.createObjectURL(new Blob([this.asArrayGif()], {type: 'image/gif'}));
-    }
+    return window.URL.createObjectURL(new Blob([this.asArrayGif()], {type: 'image/gif'}));
   }
 
   public async render(flipped = false) {
@@ -303,7 +292,9 @@ export class ChessGif {
       piece = move[0];
       if (piece < 'A') return; // things like results
       if (move.length === 4) {
-        if (move[1] < '9') rankConstraint = parseInt(move[1]);
+        if (move[1] < '9') {
+          rankConstraint = 8 - parseInt(move[1]);
+        }
         else fileConstraint = FILES[move[1]];
         move = move.substring(1);
       }
