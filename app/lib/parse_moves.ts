@@ -4,17 +4,17 @@ function cleanMoves(moves: string): string {
   let ret = '';
   let inComment = false;
   let inTag = false;
-  let inBranch = false;
+  let branchDepth = 0;
 
   for (const c of moves) {
     if (!inTag && c === '{') inComment = true;
     if (!inComment && c === '[') inTag = true;
-    if (!inBranch && c === '(') inBranch = true;
+    if (c === '(') branchDepth ++;
 
-    if (!inComment && !inTag && !inBranch) ret += c;
+    if (!inComment && !inTag && branchDepth === 0) ret += c;
     if (c === '}') inComment = false;
     if (c === ']') inTag = false;
-    if (c === ')') inBranch = false;
+    if (c === ')') branchDepth -= 1;
   }
 
   return ret;
