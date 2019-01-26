@@ -1,5 +1,4 @@
 import * as React from "react";
-import { parseMoves } from "../lib/parse_moves"
 import { ChessGif } from "../lib/chessgif"
 
 interface Props {
@@ -48,10 +47,6 @@ export class Gif extends React.Component<Props, State> {
   }
 
   public render() {
-    return (
-      <img
-        id="animated-gif" src={this.state.url} alt=""
-      />
-    )
+    return <img id="animated-gif" src={this.state.url} alt="" />
   }
 }
