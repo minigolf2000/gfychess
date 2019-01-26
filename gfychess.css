@@ -36,9 +36,22 @@ h3, #option-form {
 
 #right {
   flex: 0;
-  align-self: flex-start;
   position: sticky;
+  align-self: flex-start;
   top: 20px;
+}
+
+@media (max-width: 500px) {
+  #container {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  #right {
+    position: inherit;
+    align-self: inherit;
+    top: inherit;
+  }
 }
 
 .description {
@@ -111,7 +124,7 @@ textarea::placeholder {
 .drag-handle {
   background-color: rgb(70, 136, 241);
   width: 3px;
-  height: 35px;
+  height: 32px;
   display: inline-block;
   position: absolute;
 }
@@ -130,24 +143,20 @@ textarea::placeholder {
 }
 #move-selector .move {
   display: inline-block;
-  padding: 5px 0px;
+  padding: 2px 0px;
   cursor: pointer;
   color: #333333;
   font-size: 1rem;
 }
 
-#move-selector .move.disabled {
-  cursor: inherit;
-}
-
 #move-selector .flex {
   width: 60px;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
 }
 
 #move-selector .move.hovered:hover .flex {
-  border-bottom: 5px solid #EEC54C;
+  border-bottom: 4px solid #EEC54C;
 }
 
 #move-selector .selected .flex {
