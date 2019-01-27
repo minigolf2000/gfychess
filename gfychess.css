@@ -11,10 +11,16 @@ html, body {
   padding: 10px;
 }
 
+h1 {
+  margin: 10px 0px;
+}
+
 h2 {
   font-weight: normal;
   font-size: 1.6rem;
   color: #333333;
+  margin-top: 10px;
+  margin-bottom: 22px;
 }
 
 h3, #option-form {
@@ -22,6 +28,7 @@ h3, #option-form {
   font-size: .7rem;
   font-weight: bold;
   color: #5F6368;
+  margin: 10px 0px;
 }
 
 #container {
@@ -72,10 +79,19 @@ textarea {
   padding: 10px;
   transition: 0.2s;
   transition-timing-function: ease-in;
+
+  /* for windows */
+  font-size: .65em;
+  font-family: inherit;
+  border: 1px solid black;
 }
 
 textarea::placeholder {
   font-size: 1rem;
+  line-height: 1.2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @font-face {
@@ -114,6 +130,7 @@ textarea::placeholder {
 
 #move-selector ol {
   user-select: none;
+  -moz-user-select: none;
   font-family: "chesssanspiratf", sans-serif;
   color: #666666;
   margin: 0px 20px;
@@ -174,6 +191,11 @@ textarea::placeholder {
   flex-direction: row;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+#examples h3 {
+  margin-right: 5px;
 }
 
 #examples button {
@@ -182,7 +204,13 @@ textarea::placeholder {
   align-items: center;
   height: 24px;
   border-radius: 1px;
-  margin-left: 10px;
+  margin: 5px;
+
+  /* set these for windows */
+  border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
+  border-style: solid;
+  border-width: 1px;
+  background-color: inherit;
 }
 
 #examples button:active {
@@ -207,11 +235,19 @@ textarea::placeholder {
 }
 
 #option-form {
-  text-align: right;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+input[type="checkbox"] {
+  margin-right: 6px;
 }
 
 .example-footer {
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: #999999;
+  margin-bottom: 0px;
 }

@@ -16,7 +16,6 @@ export function OptionForm(props: Props) {
         checked={flipBoard}
         onChange={() => setFlipBoard(!flipBoard)}
       />
-      &nbsp;
       <label htmlFor="flip-board">Flip board</label>
     </div>
   );

@@ -15,6 +15,7 @@ export function PGNInput(props: Props) {
         value={props.pgn}
         onFocus={(e) => { e.target.select(); }}
         onChange={(e) => { props.setPgn(e.target.value); }}
+        spellCheck={false}
       />
 
       <div id="examples">
