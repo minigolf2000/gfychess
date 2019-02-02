@@ -192,6 +192,8 @@ textarea::placeholder {
   align-items: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  height: 36px;
+  overflow: hidden;
 }
 
 #examples h3 {
