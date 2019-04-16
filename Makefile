@@ -1,8 +1,8 @@
 lint:
-	yarn tslint -c tslint.json 'app/**/*.ts*'
+	npm run tslint -c tslint.json 'app/**/*.ts*'
 
 deploy:
-	yarn build
+	npm run build
 	scp index.html gfychess.css dist/bundle-gfychess.js favicon.ico golfsinteppadon.com:/var/www/gfychess.com
 
 deploy-images:
