@@ -1,21 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as React from "react";
 
 interface Props {
   moves: string[];
   range: number[];
-  setRange(range: number[]): void;
+  renderAnimatedGIF(range: number[]): void;
   setHovering(value: boolean): void;
 }
 
-let dragPaneImageRef: HTMLDivElement = null
-let cachedDragOverBounds: ClientRect = null
+const ROW_HEIGHT = 33
+const ROW_WIDTH = 70
+const DRAGGABLE_HANDLE_WIDTH = 7
 
 export function MoveSelector(props: Props) {
-  const { moves, range, setRange, setHovering } = props;
+  const { moves, range, renderAnimatedGIF, setHovering } = props;
 
+  // If move list ever changes, reset to selecting all moves
   useEffect(() => {
-    setRange([0, moves.length - 1])
+    renderAnimatedGIF([0, moves.length - 1])
     setGifStart(0)
     setGifEnd(moves.length - 1)
   }, [JSON.stringify(moves)])
@@ -26,14 +28,19 @@ export function MoveSelector(props: Props) {
   const [currentHoveredIndex, setCurrentHoveredIndex] = useState(-1);
   const [mouseDownIndex, setMouseDownIndex] = useState(-1);
 
-  const className = (i: number) => {
-    let className = [];
+  const currentHoveringRange = () => {
     let min = gifStart;
     let max = gifEnd;
     if (mouseDownIndex > -1) {
       min = Math.min(currentHoveredIndex, mouseDownIndex)
       max = Math.max(currentHoveredIndex, mouseDownIndex)
     }
+    return [min, max]
+  }
+
+  const className = (i: number) => {
+    let className = [];
+    let [min, max] = currentHoveringRange()
 
     if (i == min) {
       className.push("start");
@@ -51,9 +58,11 @@ export function MoveSelector(props: Props) {
   }
 
   const onMouseEnter = (i: number) => {
-    setRange([i, i])
+    renderAnimatedGIF([i, i])
     setHovering(true);
-    setCurrentHoveredIndex(i);
+    if (!isDraggingStartHandle && !isDraggingEndHandle) {
+      setCurrentHoveredIndex(i);
+    }
   }
 
   useEffect(() => {
@@ -66,108 +75,84 @@ export function MoveSelector(props: Props) {
 
   const commit = () => {
     if (mouseDownIndex > -1) {
-      setHovering(false);
       const min = Math.min(mouseDownIndex, currentHoveredIndex)
       const max = Math.max(mouseDownIndex, currentHoveredIndex)
-      setRange([min, max]);
+      renderAnimatedGIF([min, max]);
       setGifStart(min);
       setGifEnd(max);
-      setMouseDownIndex(-1);
     } else {
-      // user aborted selection. rollback
-      setRange([gifStart, gifEnd])
-      setHovering(false);
-      setMouseDownIndex(-1);
+      // user hovered over things, but never made a selection.
+      // rollback the GIF to what we had before
+      renderAnimatedGIF([gifStart, gifEnd])
     }
+
+    setHovering(false);
+    setMouseDownIndex(-1);
+    setIsDraggingStartHandle(false)
+    setIsDraggingEndHandle(false)
   }
 
-  const [reorderingIndex, setReorderingIndex] = useState(-1)
-  const [dragOverIndex, setDragOverIndex] = useState(-1)
-  const [isDraggingBefore, setIsDraggingBefore] = useState(false)
-
-
-  const onDragStart = (i: number, e: React.DragEvent<HTMLSpanElement>) => {
-    // This removes the default visual copy of the element and the copy cursor
-    // note:  setData is needed for Firefox to recognize drag events
-    // as any is needed because some tslint is not happy with the definition of setDragImage
-    let event = e as any
-    // event.dataTransfer.setData('text', nodeId)
-    event.dataTransfer.dropEffect = 'none'
-    // event.dataTransfer.dropEffect = 'move'
-    event.dataTransfer.effectAllowed = 'move'
-    if (dragPaneImageRef) {
-      event.dataTransfer.setDragImage(dragPaneImageRef, 10, 10)
-    }
-    console.log(i)
-    setReorderingIndex(i);
-    setDragOverIndex(-1);
-  }
-
-
-
-  const onDragOver = (i: number, e: React.MouseEvent<HTMLSpanElement>) => {
-    e.preventDefault();
-
-    const htmlElem = e.target as HTMLSpanElement
-    if (dragOverIndex !== i) {
-      cachedDragOverBounds = htmlElem.getBoundingClientRect()
-    }
-
-    let offsetX = e.clientX - cachedDragOverBounds.left
-    if (reorderingIndex > -1) {
-      if (i !== reorderingIndex) {
-        setDragOverIndex(i)
-        setIsDraggingBefore(offsetX < (cachedDragOverBounds.width / 2))
-      }
-      e.preventDefault()
-      e.stopPropagation()
-    }
-  }
-
-  const onDragLeave = (i: number, e: React.MouseEvent<HTMLSpanElement>) => {
-    if (dragOverIndex === i) {
-      setDragOverIndex(-1);
-    }
+  const [isDraggingStartHandle, setIsDraggingStartHandle] = useState(false);
+  const onStartHandleMouseDown = ( e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault()
     e.stopPropagation()
-  }
-
-  const onDragDrop = (i: number, e: React.MouseEvent<HTMLSpanElement>) => {
-    console.log(reorderingIndex)
-    if (reorderingIndex > -1) {
-      if (isDraggingBefore) {
-        console.log("yes")
-      } else {
-        console.log("no");
-      }
-      setReorderingIndex(-1);
-      setDragOverIndex(-1);
-      e.preventDefault()
-      e.stopPropagation()
+    if (!isDraggingStartHandle) {
+      setIsDraggingStartHandle(true)
+      setMouseDownIndex(gifEnd)
     }
   }
 
+  const [isDraggingEndHandle, setIsDraggingEndHandle] = useState(false);
+  const onEndHandleMouseDown = ( e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!isDraggingEndHandle) {
+      setIsDraggingEndHandle(true)
+      setMouseDownIndex(gifStart)
+    }
+  }
+
+  const tableEl = useRef(null);
+
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDraggingStartHandle || isDraggingEndHandle) {
+      const rect = (tableEl.current as HTMLDivElement).getBoundingClientRect()
+
+      let topOffset = Math.floor((e.clientY - rect.top) * 2 / ROW_HEIGHT)
+      if (topOffset % 2 == 1) topOffset -= 1
+
+      const leftOffsetPixels = e.clientX - rect.left - 30
+      const leftOffset = leftOffsetPixels < ROW_WIDTH / 2 ? -1 :
+                         leftOffsetPixels < ROW_WIDTH * 1.5 ? 0 : 1
+
+      const nextHoveredIndex = topOffset + leftOffset + (isDraggingStartHandle ? 1 : 0)
+      if (currentHoveredIndex != nextHoveredIndex) {
+        setCurrentHoveredIndex(nextHoveredIndex);
+      }
+    }
+  }
+
+  const [startHandleIndex, endHandleIndex] = currentHoveringRange()
+  const startHandleStyle: React.CSSProperties = {top: Math.floor(startHandleIndex / 2) * ROW_HEIGHT, left: startHandleIndex % 2 * ROW_WIDTH - DRAGGABLE_HANDLE_WIDTH + 35}
+  const endHandleStyle: React.CSSProperties = {top: Math.floor(endHandleIndex / 2) * ROW_HEIGHT, left: (endHandleIndex % 2 + 1) * ROW_WIDTH - DRAGGABLE_HANDLE_WIDTH + 35}
   return (
     <div id="move-selector">
-      <h3>Moves to include</h3>
-      <ol onMouseLeave={commit}>
+      <p className="description">Moves to include</p>
+      <div className="table" onMouseLeave={commit} onMouseMove={onMouseMove} ref={tableEl}>
+        <span className="drag-handle start" style={startHandleStyle} onMouseDown={onStartHandleMouseDown}></span>
+        <span className="drag-handle end" style={endHandleStyle} onMouseDown={onEndHandleMouseDown}></span>
         {columns(moves).map((column: string[], rowNum: number) => (
-          <li key={rowNum}>
-          {
-            [0, 1].map((offset: number) => {
-              const i = rowNum * 2 + offset
-              if (!column[offset]) {
-                return <span key={offset} className="move disabled">&nbsp;</span>
-              } else {
-                return (
-                  <React.Fragment key={offset}>
-                    {className(i).includes("start") && (
-                      <span className="drag-handle" draggable onDragStart={(e) => onDragStart(i, e)}></span>
-                    )}
-
+          <div className="row" key={rowNum}>
+            <div className="rowNum">{rowNum}.</div>
+            {
+              [0, 1].map((offset: number) => {
+                const i = rowNum * 2 + offset
+                if (!column[offset]) {
+                  return <span key={i} className="move disabled">&nbsp;</span>
+                } else {
+                  return (
                     <span
-                      onDragOver={(e) => onDragOver(i, e)}
-                      onDragLeave={(e) => onDragLeave(i, e)}
-                      onDrop={(e) => onDragDrop(i, e)}
+                      key={i}
                       onMouseEnter={(e: any) => { onMouseEnter(i)}}
                       onMouseDown={() => setMouseDownIndex(i)}
                       onMouseUp={commit}
@@ -175,20 +160,14 @@ export function MoveSelector(props: Props) {
                     >
                       <span className="flex">{column[offset]}</span>
                     </span>
-
-                    {className(i).includes("end") && (
-                      <span className="drag-handle" draggable onDragStart={(e) => onDragStart(i, e)}></span>
-                    )}
-
-                  </React.Fragment>
-                );
-              }
-            })
-          }
-          </li>
+                  );
+                }
+              })
+            }
+          </div>
         ))}
-      </ol>
-      <p>{gifEnd - gifStart + 1} out of {moves.length} moves</p>
+      </div>
+      <p className="description">{gifEnd - gifStart + 1} out of {moves.length} moves</p>
     </div>
   );
 }

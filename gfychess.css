@@ -18,13 +18,13 @@ h1 {
 h2 {
   font-weight: normal;
   font-size: 1.6rem;
+  letter-spacing: 0.02em;
   color: #333333;
   margin-top: 10px;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 h3, #option-form {
-  text-transform: uppercase;
   font-size: .7rem;
   font-weight: bold;
   color: #5F6368;
@@ -62,8 +62,8 @@ h3, #option-form {
 }
 
 .description {
-  color: #666666;
-  font-size: .8rem;
+  color: #333333;
+  font-size: .9rem;
 }
 
 #right .description {
@@ -79,6 +79,7 @@ textarea {
   padding: 10px;
   transition: 0.2s;
   transition-timing-function: ease-in;
+  letter-spacing: 0.03em;
 
   /* for windows */
   font-size: .65em;
@@ -128,36 +129,41 @@ textarea::placeholder {
   text-align: center;
 }
 
-#move-selector ol {
+#move-selector .row {
+  display: grid;
+  width: 170px;
+  grid-template-columns: 30px 70px 70px;
   user-select: none;
   -moz-user-select: none;
   font-family: "chesssanspiratf", sans-serif;
   color: #666666;
-  margin: 0px 20px;
-  padding: 0px;
   font-size: .7rem;
+}
+
+.rowNum {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 5px;
 }
 
 .drag-handle {
   background-color: rgb(70, 136, 241);
-  width: 3px;
+  width: 5px;
   height: 32px;
   display: inline-block;
   position: absolute;
+  cursor: grab;
 }
 
-.drag-handle::before {
-  content: ".";
-  color: rgb(70, 136, 241);
-  width: 9px;
-  height: 9px;
-  display: inline-block;
-  background-color: rgb(70, 136, 241);
-  border-radius: 5px;
+#move-selector .description {
+  padding-left: 30px;
+}
+
+#move-selector .table {
   position: relative;
-  left: -3px;
-
 }
+
 #move-selector .move {
   display: inline-block;
   padding: 2px 0px;
@@ -167,7 +173,6 @@ textarea::placeholder {
 }
 
 #move-selector .flex {
-  width: 60px;
   border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
 }
@@ -190,6 +195,7 @@ textarea::placeholder {
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin-top: 10px;
   margin-bottom: 20px;
   flex-wrap: wrap;
   height: 36px;
@@ -241,6 +247,7 @@ textarea::placeholder {
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+  margin-right: 5px;
 }
 
 input[type="checkbox"] {
@@ -248,8 +255,7 @@ input[type="checkbox"] {
 }
 
 .example-footer {
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   color: #999999;
   margin-bottom: 0px;
 }

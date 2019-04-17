@@ -18,7 +18,6 @@ export default function App() {
   }
 
   const classVisibleWhenPgnFilled = " " + (pgn == "" ? "hidden" : "visible")
-  const classVisibleWhenPgnEmpty = " " + (pgn != "" ? "hidden" : "visible")
 
   return (
     <>
@@ -33,7 +32,7 @@ export default function App() {
           <MoveSelector
             moves={moves}
             range={range}
-            setRange={setRange}
+            renderAnimatedGIF={setRange}
             setHovering={setHovering}
           />
         </div>
@@ -44,14 +43,16 @@ export default function App() {
             range={range}
             flipBoard={flipBoard}
           />
-          <p className={"description example-footer " + (classVisibleWhenPgnEmpty)}>Example</p>
-
-          <div className={classVisibleWhenPgnFilled}>
+          {pgn == "" ? (
+            <p className="description example-footer">example</p>
+          ) : (
+          <div>
             <OptionForm
               flipBoard={flipBoard}
               setFlipBoard={setFlipBoard}
             />
           </div>
+          )}
         </div>
 
       </div>
