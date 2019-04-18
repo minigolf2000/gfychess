@@ -148,12 +148,13 @@ textarea::placeholder {
 }
 
 .drag-handle {
-  background-color: rgb(70, 136, 241);
-  width: 5px;
+  width: 3px;
   height: 32px;
   display: inline-block;
   position: absolute;
   cursor: grab;
+  border: 1px solid rgb(70, 136, 241);
+  background: url('public/grip.svg') rgb(70, 136, 241) no-repeat center;
 }
 
 #move-selector .description {
