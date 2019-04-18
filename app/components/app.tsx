@@ -9,6 +9,7 @@ import { Gif } from "./gif";
 export default function App() {
   const [pgn, setPgn] = useState("");
   const [range, setRange] = useState([-1, -1]);
+  const [url, setUrl] = useState("");
   const [hovering, setHovering] = useState(false);
   const [flipBoard, setFlipBoard] = useState(false);
 
@@ -17,7 +18,14 @@ export default function App() {
     moves = ["e4", "e5", "Bc4", "Nc6", "Qh5", "Nf6??", "Qxf7#"];
   }
 
-  const classVisibleWhenPgnFilled = " " + (pgn == "" ? "hidden" : "visible")
+  const classVisibleWhenPgnFilled = pgn == "" ? "hidden" : "visible"
+
+  const download = () => {
+    const link = document.createElement("a");
+    link.download = "gfychess-" + url + ".gif";
+    link.href = url;
+    link.click();
+  }
 
   return (
     <>
@@ -28,7 +36,7 @@ export default function App() {
         setPgn={setPgn}
       />
       <div id="container">
-        <div className={"left" + classVisibleWhenPgnFilled}>
+        <div className={`left ${classVisibleWhenPgnFilled}`}>
           <MoveSelector
             moves={moves}
             range={range}
@@ -37,10 +45,14 @@ export default function App() {
           />
         </div>
         <div id="right" className={hovering ? "frozen" : ""}>
-          <p className={"description " + classVisibleWhenPgnFilled}>Right-click to save or copy your GIF!</p>
+          <div className="download-container">
+            <button className={`download-link ${classVisibleWhenPgnFilled}`} onClick={download}>⇩ Download</button>
+          </div>
           <Gif
             moves={moves}
             range={range}
+            url={url}
+            setUrl={setUrl}
             flipBoard={flipBoard}
           />
           {pgn == "" ? (

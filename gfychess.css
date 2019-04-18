@@ -100,6 +100,18 @@ textarea::placeholder {
   src: url("public/ChessSansPiratf.woff");
 }
 
+.download-container {
+  text-align: center;
+}
+
+.download-link {
+  background-color: rgb(70, 136, 241);
+  color: white;
+  font-weight: bold;
+  border: 1px solid darkblue;
+  padding: 4px 20px;
+}
+
 .hidden {
   visibility: hidden;
   transition-duration: calc(16ms * 5);

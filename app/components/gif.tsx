@@ -5,17 +5,11 @@ interface Props {
   moves: string[];
   range: number[];
   flipBoard: boolean;
-}
-
-interface State {
   url: string;
+  setUrl: (url: string) => void;
 }
 
-export class Gif extends React.Component<Props, State> {
-  public constructor(props: Props) {
-    super(props);
-    this.state = {url: ""}
-  }
+export class Gif extends React.Component<Props, {}> {
 
   chessGif = new ChessGif();
 
@@ -42,11 +36,11 @@ export class Gif extends React.Component<Props, State> {
       await this.chessGif.createGif(this.props.range[0], this.props.range[1], this.props.flipBoard);
 
       const url = this.chessGif.asBase64Gif();
-      this.setState({url})
+      this.props.setUrl(url)
     }
   }
 
   public render() {
-    return <img id="animated-gif" src={this.state.url} alt="" />
+    return <img id="animated-gif" src={this.props.url} alt="" />
   }
 }
