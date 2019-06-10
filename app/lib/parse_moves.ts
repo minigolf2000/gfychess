@@ -20,6 +20,11 @@ function cleanMoves(moves: string): string {
   return ret;
 }
 
+// Return true if move is like "1-0", or "0–1", or 1/2-1/2
+function isGameResultMove(move: string) {
+  return move == "*" || ((move.indexOf("-") !== -1 || move.indexOf("–") !== -1) && move.indexOf("1") !== -1)
+}
+
 export function parseMoves(moveStr: string): string[] {
   const rawMoves = cleanMoves(moveStr).split('.');
   rawMoves.shift();
@@ -29,7 +34,7 @@ export function parseMoves(moveStr: string): string[] {
     const tokens = move.trim().split(' ');
     let extracted = 0;
     for (const token of tokens) {
-      if (token != '') {
+      if (token !== '' && !isGameResultMove(token)) {
         moves.push(token);
         extracted++;
         if (extracted === 2) break;

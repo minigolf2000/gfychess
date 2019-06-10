@@ -7,7 +7,7 @@ interface Props {
   setPgn(pgn: string): void;
 }
 
-export function PGNInput(props: Props) {
+export function PGNTextarea(props: Props) {
   return (
     <>
       <textarea

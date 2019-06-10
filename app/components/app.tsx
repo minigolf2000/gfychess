@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import * as React from "react";
 import { parseMoves } from "../lib/parse_moves"
-import { PGNInput } from "./pgn-input";
+import { PGNTextarea } from "./pgn-textarea";
 import { MoveSelector } from "./move-selector";
-import { OptionForm } from "./option-form";
 import { Gif } from "./gif";
 
 export default function App() {
@@ -27,11 +26,15 @@ export default function App() {
     link.click();
   }
 
+  const toggleFlipboard = () => {
+    setFlipBoard(!flipBoard)
+  }
+
   return (
     <>
       <h1><img src="public/logo.svg" alt="Gfychess"/></h1>
       <h2>Create and share chess animated GIFs!</h2>
-      <PGNInput
+      <PGNTextarea
         pgn={pgn}
         setPgn={setPgn}
       />
@@ -46,7 +49,7 @@ export default function App() {
         </div>
         <div id="right" className={hovering ? "frozen" : ""}>
           <div className="download-container">
-            <button className={`download-link ${classVisibleWhenPgnFilled}`} onClick={download}>⇩ Download</button>
+            <button className={`download-link ${classVisibleWhenPgnFilled}`} onClick={download}>↓ Download</button>
           </div>
           <Gif
             moves={moves}
@@ -59,10 +62,15 @@ export default function App() {
             <p className="description example-footer">example</p>
           ) : (
           <div>
-            <OptionForm
-              flipBoard={flipBoard}
-              setFlipBoard={setFlipBoard}
-            />
+            <div id="option-form">
+              <input
+                type="checkbox"
+                id="flip-board"
+                checked={flipBoard}
+                onChange={toggleFlipboard}
+              />
+              <label htmlFor="flip-board">Flip board</label>
+            </div>
           </div>
           )}
         </div>

@@ -25,9 +25,9 @@ h2 {
 }
 
 h3, #option-form {
-  font-size: .7rem;
-  font-weight: bold;
-  color: #5F6368;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: #333333;
   margin: 10px 0px;
 }
 
@@ -63,7 +63,8 @@ h3, #option-form {
 
 .description {
   color: #333333;
-  font-size: .9rem;
+  font-size: 12px;
+  letter-spacing: 0.02em;
 }
 
 #right .description {
@@ -101,15 +102,24 @@ textarea::placeholder {
 }
 
 .download-container {
-  text-align: center;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .download-link {
   background-color: rgb(70, 136, 241);
   color: white;
+  font-size: 12px;
   font-weight: bold;
-  border: 1px solid darkblue;
-  padding: 4px 20px;
+  border: 1px solid #1f70f1;
+  padding: 4px 14px;
+  padding-right: 17px;
+}
+
+.download-link:hover {
+  background-color: #1f70f1;
 }
 
 .hidden {
@@ -234,6 +244,9 @@ textarea::placeholder {
   background-color: inherit;
 }
 
+#examples button:hover {
+  background-color: #F3F3F3;
+}
 #examples button:active {
   background-color: rgb(219, 237, 252);
 }
@@ -261,6 +274,7 @@ textarea::placeholder {
   justify-content: flex-end;
   align-items: center;
   margin-right: 5px;
+  user-select: none;
 }
 
 input[type="checkbox"] {
@@ -268,7 +282,7 @@ input[type="checkbox"] {
 }
 
 .example-footer {
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   color: #999999;
   margin-bottom: 0px;
 }
