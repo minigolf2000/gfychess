@@ -102,7 +102,7 @@ textarea::placeholder {
 }
 
 .download-container {
-  height: 34px;
+  height: 58px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,6 +157,7 @@ textarea::placeholder {
   grid-template-columns: 30px 70px 70px;
   user-select: none;
   -moz-user-select: none;
+  -webkit-user-select: none;
   font-family: "chesssanspiratf", sans-serif;
   color: #666666;
   font-size: .7rem;
@@ -170,16 +171,21 @@ textarea::placeholder {
 }
 
 .drag-handle {
-  width: 3px;
-  height: 32px;
+  width: 7px;
+  height: 31px;
   display: inline-block;
   position: absolute;
   cursor: grab;
-  border: 1px solid rgb(70, 136, 241);
   background: url('public/grip.svg') rgb(70, 136, 241) no-repeat center;
 }
 
 #move-selector .description {
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  box-sizing: border-box;
+  display: flex;
+  margin: 0px;
   padding-left: 30px;
 }
 
@@ -189,10 +195,11 @@ textarea::placeholder {
 
 #move-selector .move {
   display: inline-block;
+  height: 28px;
+  font-size: 16px;
   padding: 2px 0px;
   cursor: pointer;
   color: #333333;
-  font-size: 1rem;
 }
 
 #move-selector .flex {
@@ -219,7 +226,7 @@ textarea::placeholder {
   flex-direction: row;
   align-items: center;
   margin-top: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
   height: 36px;
   overflow: hidden;
@@ -247,8 +254,10 @@ textarea::placeholder {
 #examples button:hover {
   background-color: #F3F3F3;
 }
+
 #examples button:active {
   background-color: rgb(219, 237, 252);
+  color: inherit; /* for Safari */
 }
 
 #examples button img {

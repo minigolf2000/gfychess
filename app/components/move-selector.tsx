@@ -8,9 +8,9 @@ interface Props {
   setHovering(value: boolean): void;
 }
 
-const ROW_HEIGHT = 33
+const ROW_HEIGHT = 32
 const ROW_WIDTH = 70
-const DRAGGABLE_HANDLE_WIDTH = 7
+const DRAGGABLE_HANDLE_WIDTH = 8
 
 export function MoveSelector(props: Props) {
   const { moves, range, renderAnimatedGIF, setHovering } = props;
@@ -65,14 +65,6 @@ export function MoveSelector(props: Props) {
     }
   }
 
-  useEffect(() => {
-    if (!document.body.onmouseup) {
-      document.body.onmouseup = () => {
-        setHovering(false);
-      }
-    }
-  })
-
   const commit = () => {
     if (mouseDownIndex > -1) {
       const min = Math.min(mouseDownIndex, currentHoveredIndex)
@@ -114,7 +106,7 @@ export function MoveSelector(props: Props) {
 
   const tableEl = useRef(null);
 
-  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onMouseMove = (e: any) => {
     if (isDraggingStartHandle || isDraggingEndHandle) {
       const rect = (tableEl.current as HTMLDivElement).getBoundingClientRect()
 
@@ -125,20 +117,43 @@ export function MoveSelector(props: Props) {
       const leftOffset = leftOffsetPixels < ROW_WIDTH / 2 ? -1 :
                          leftOffsetPixels < ROW_WIDTH * 1.5 ? 0 : 1
 
-      const nextHoveredIndex = topOffset + leftOffset + (isDraggingStartHandle ? 1 : 0)
+      let nextHoveredIndex = topOffset + leftOffset + (isDraggingStartHandle ? 1 : 0)
+      nextHoveredIndex = Math.min(Math.max(0, nextHoveredIndex), moves.length - 1)
       if (currentHoveredIndex != nextHoveredIndex) {
         setCurrentHoveredIndex(nextHoveredIndex);
       }
     }
   }
 
+  useEffect(() =>  {
+    document.addEventListener("mousemove", onMouseMove)
+    return () => {
+      document.removeEventListener("mousemove", onMouseMove)
+    }
+  })
+
+  useEffect(() => {
+    if (!document.body.onmouseup) {
+      document.body.onmouseup = () => {
+        setHovering(false);
+      }
+    }
+  })
+
+  useEffect(() =>  {
+    document.addEventListener("mouseup", commit)
+    return () => {
+      document.removeEventListener("mouseup", commit)
+    }
+  })
+
   const [startHandleIndex, endHandleIndex] = currentHoveringRange()
-  const startHandleStyle: React.CSSProperties = {top: Math.floor(startHandleIndex / 2) * ROW_HEIGHT, left: startHandleIndex % 2 * ROW_WIDTH - DRAGGABLE_HANDLE_WIDTH + 35}
-  const endHandleStyle: React.CSSProperties = {top: Math.floor(endHandleIndex / 2) * ROW_HEIGHT, left: (endHandleIndex % 2 + 1) * ROW_WIDTH - DRAGGABLE_HANDLE_WIDTH + 35}
+  const startHandleStyle: React.CSSProperties = {top: Math.floor(startHandleIndex / 2) * ROW_HEIGHT + 1, left: startHandleIndex % 2 * ROW_WIDTH - DRAGGABLE_HANDLE_WIDTH + 35}
+  const endHandleStyle: React.CSSProperties = {top: Math.floor(endHandleIndex / 2) * ROW_HEIGHT + 1, left: (endHandleIndex % 2 + 1) * ROW_WIDTH - DRAGGABLE_HANDLE_WIDTH + 35}
   return (
     <div id="move-selector">
       <p className="description">Moves to include</p>
-      <div className="table" onMouseLeave={commit} onMouseMove={onMouseMove} ref={tableEl}>
+      <div className="table" onMouseLeave={() => !isDraggingStartHandle && !isDraggingEndHandle && commit()} ref={tableEl}>
         <span className="drag-handle start" style={startHandleStyle} onMouseDown={onStartHandleMouseDown}></span>
         <span className="drag-handle end" style={endHandleStyle} onMouseDown={onEndHandleMouseDown}></span>
         {columns(moves).map((column: string[], rowNum: number) => (
@@ -155,7 +170,6 @@ export function MoveSelector(props: Props) {
                       key={i}
                       onMouseEnter={(e: any) => { onMouseEnter(i)}}
                       onMouseDown={() => setMouseDownIndex(i)}
-                      onMouseUp={commit}
                       className={"move " + className(i)}
                     >
                       <span className="flex">{column[offset]}</span>

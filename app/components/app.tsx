@@ -23,7 +23,9 @@ export default function App() {
     const link = document.createElement("a");
     link.download = "gfychess-" + url + ".gif";
     link.href = url;
-    link.click();
+
+    // https://stackoverflow.com/a/48367757
+    link.dispatchEvent(new MouseEvent(`click`, {bubbles: true, cancelable: true, view: window}));
   }
 
   const toggleFlipboard = () => {
