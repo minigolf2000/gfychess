@@ -114,10 +114,9 @@ export function MoveSelector(props: Props) {
       if (topOffset % 2 == 1) topOffset -= 1
 
       const leftOffsetPixels = e.clientX - rect.left - 30
-      const leftOffset = leftOffsetPixels < ROW_WIDTH / 2 ? -1 :
-                         leftOffsetPixels < ROW_WIDTH * 1.5 ? 0 : 1
+      const leftOffset = leftOffsetPixels < ROW_WIDTH ? 0 : 1
 
-      let nextHoveredIndex = topOffset + leftOffset + (isDraggingStartHandle ? 1 : 0)
+      let nextHoveredIndex = topOffset + leftOffset
       nextHoveredIndex = Math.min(Math.max(0, nextHoveredIndex), moves.length - 1)
       if (currentHoveredIndex != nextHoveredIndex) {
         setCurrentHoveredIndex(nextHoveredIndex);
