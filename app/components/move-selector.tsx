@@ -181,7 +181,7 @@ export function MoveSelector(props: Props) {
           </div>
         ))}
       </div>
-      <p className="description">{gifEnd - gifStart + 1} out of {moves.length} moves</p>
+      <p className="description">{endHandleIndex - startHandleIndex + 1} out of {moves.length} moves</p>
     </div>
   );
 }

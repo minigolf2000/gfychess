@@ -73,7 +73,7 @@ h3, #option-form {
 
 textarea {
   width: calc(100% - 20px);
-  height: 40px;
+  height: 60px;
   color: #333333;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   line-height: 1.1rem;
@@ -82,10 +82,10 @@ textarea {
   transition-timing-function: ease-in;
   letter-spacing: 0.03em;
 
-  /* for windows */
+  /* for Windows */
   font-size: .65em;
   font-family: inherit;
-  border: 1px solid black;
+  border: 1px solid #333333;
 }
 
 textarea::placeholder {
@@ -102,7 +102,7 @@ textarea::placeholder {
 }
 
 .download-container {
-  height: 58px;
+  height: 57px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,7 +252,7 @@ textarea::placeholder {
 }
 
 #examples button:hover {
-  background-color: #F3F3F3;
+  background-color: #F5F5F5;
 }
 
 #examples button:active {
