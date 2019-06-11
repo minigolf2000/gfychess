@@ -15,12 +15,14 @@ const DRAGGABLE_HANDLE_WIDTH = 8
 export function MoveSelector(props: Props) {
   const { moves, range, renderAnimatedGIF, setHovering } = props;
 
-  // If move list ever changes, reset to selecting all moves
-  useEffect(() => {
+  const resetSelection = () => {
     renderAnimatedGIF([0, moves.length - 1])
     setGifStart(0)
     setGifEnd(moves.length - 1)
-  }, [JSON.stringify(moves)])
+  }
+
+  // If move list ever changes, reset to selecting all moves
+  useEffect(resetSelection, [JSON.stringify(moves)])
 
   const [gifStart, setGifStart] = useState(range[0])
   const [gifEnd, setGifEnd] = useState(range[1])
@@ -169,6 +171,7 @@ export function MoveSelector(props: Props) {
                       key={i}
                       onMouseEnter={(e: any) => { onMouseEnter(i)}}
                       onMouseDown={() => setMouseDownIndex(i)}
+                      onDoubleClick={resetSelection}
                       className={"move " + className(i)}
                     >
                       <span className="flex">{column[offset]}</span>
