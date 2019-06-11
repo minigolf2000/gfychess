@@ -124,13 +124,13 @@ export class ChessGif {
   }
 
   public async createGif(start: number, end: number, flipped = false): Promise<Uint8Array> {
-    if (start == 0) {
+    if (start === 0) {
       await this.render(flipped);
     }
 
     while (this.moveIdx < this.moves.length && this.moveIdx <= end) {
       this.step();
-      if (this.moveIdx > start) {
+      if (this.moveIdx >= start) {
         await this.render(flipped);
       }
     }

@@ -58,7 +58,7 @@ export function MoveSelector(props: Props) {
   }
 
   const onMouseEnter = (i: number) => {
-    renderAnimatedGIF([i, i])
+    renderAnimatedGIF([i + 1, i])
     setHovering(true);
     if (!isDraggingStartHandle && !isDraggingEndHandle) {
       setCurrentHoveredIndex(i);
