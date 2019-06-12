@@ -159,7 +159,7 @@ export function MoveSelector(props: Props) {
         <span className="drag-handle end" style={endHandleStyle} onMouseDown={onEndHandleMouseDown}></span>
         {columns(moves).map((column: string[], rowNum: number) => (
           <div className="row" key={rowNum}>
-            <div className="rowNum">{rowNum}.</div>
+            <div className="rowNum">{rowNum + 1}.</div>
             {
               [0, 1].map((offset: number) => {
                 const i = rowNum * 2 + offset
