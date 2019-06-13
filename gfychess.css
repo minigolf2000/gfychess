@@ -219,6 +219,10 @@ textarea::placeholder {
   background-color: rgb(219, 237, 252);
 }
 
+#move-selector .mousedown .selected .flex {
+  background-color: #c5ddf1;
+}
+
 .flex {
   display: flex;
   align-items: center;
@@ -260,7 +264,7 @@ textarea::placeholder {
 }
 
 #examples button:active {
-  background-color: rgb(219, 237, 252);
+  background-color: #F5F5F5;
   color: inherit; /* for Safari */
 }
 
