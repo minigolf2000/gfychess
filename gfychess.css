@@ -88,6 +88,10 @@ textarea {
   border: 1px solid #333333;
 }
 
+textarea:disabled {
+  background-color: #eeeeee;
+}
+
 textarea::placeholder {
   font-size: 1rem;
   line-height: 1.2em;
