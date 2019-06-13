@@ -155,6 +155,7 @@ export class ChessGif {
       // if gif.idx is 0 we haven't started a gif yet, do that
       this.header(BOARD_SIZE, BOARD_SIZE);
       this.globalColorTable();
+      this.nab(); // Netscape application block
     }
     if (this.dirtyBoard) {
       this.drawBoard(flipped);
@@ -380,6 +381,17 @@ export class ChessGif {
     table[baseIdx] = 240 + COLOR_BITS - 1;
     table.set(PALETTE, baseIdx + 3);
     this.gif.idx += tableSize;
+  }
+
+  // netscape application block
+  nab() {
+    this.gif.data.set([0x21, 0xff, // NAB header
+      0x0b, // 11 bytes
+      0x4e, 0x45, 0x54, 0x53, 0x43, 0x41, 0x50, 0x45, // NETSCAPE
+      0x32, 0x2e, 0x30, // 2.0
+      3, 1, 0xff, 0xff, 0, // infinite loop
+    ], this.gif.idx);
+    this.gif.idx += 19;
   }
 
   startImage(x: number, y: number, w: number, h: number, delay: number) {
