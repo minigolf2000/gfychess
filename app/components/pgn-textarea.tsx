@@ -1,17 +1,16 @@
 import * as React from "react";
 import exampleGames from "../lib/examples";
 import * as CopyToClipboard from "react-copy-to-clipboard";
+import { lichessRegex } from "../lib/parse_moves";
 
 interface Props {
   pgn: string;
   setPgn(pgn: string): void;
 }
 
-const lichessRe = /^\s*(http:\/\/|https:\/\/)?(www\.)?lichess\.org\/(\w{8})\/*\s*$/
-
 export function PGNTextarea(props: Props) {
   async function onMoveChange(moves: string) {
-    const isLichess = moves.match(lichessRe);
+    const isLichess = moves.match(lichessRegex);
 
     props.setPgn(moves);
     if (!isLichess) {
@@ -23,13 +22,16 @@ export function PGNTextarea(props: Props) {
     props.setPgn(text.trim());
   }
 
+  const loadingLichessUrl = props.pgn.match(lichessRegex) != null
   return (
     <>
+      {loadingLichessUrl && <div className="lichess-spinner" />}
+
       <textarea
         id='pgnText'
-        placeholder='Paste in chess PGN here e.g. "1. e4 e5 2. Nf3 Nc6 3. Bb5 ..."'
+        placeholder='Paste PGN e.g. "1. e4 e5 2. Nf3 ..." or Lichess URL "lichess.org/xxxx" here'
         value={props.pgn}
-        disabled={props.pgn.match(lichessRe) != null}
+        disabled={loadingLichessUrl}
         onFocus={(e) => { e.target.select(); }}
         onChange={(e) => { onMoveChange(e.target.value); }}
         spellCheck={false}

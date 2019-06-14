@@ -25,10 +25,16 @@ function isGameResultMove(move: string) {
   return move == "*" || ((move.indexOf("-") !== -1 || move.indexOf("–") !== -1) && move.indexOf("1") !== -1)
 }
 
+export const lichessRegex = /^\s*(http:\/\/|https:\/\/)?(www\.)?lichess\.org\/(\w{8})\w*\/*\s*$/
+
 export function parseMoves(moveStr: string): string[] {
   const rawMoves = cleanMoves(moveStr).split('.');
   rawMoves.shift();
   const moves: string[] = [];
+
+  if (moveStr.match(lichessRegex)) {
+    return moves
+  }
 
   for (const move of rawMoves) {
     const tokens = move.trim().split(' ');

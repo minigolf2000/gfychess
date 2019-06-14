@@ -17,7 +17,7 @@ export default function App() {
     moves = ["e4", "e5", "Bc4", "Nc6", "Qh5", "Nf6??", "Qxf7#"];
   }
 
-  const classVisibleWhenPgnFilled = pgn == "" ? "hidden" : "visible"
+  const classVisibleWhenMovesAvailable = (pgn === "" || moves.length === 0) ? "hidden" : "visible"
 
   const download = () => {
     const link = document.createElement("a");
@@ -41,7 +41,7 @@ export default function App() {
         setPgn={setPgn}
       />
       <div id="container">
-        <div className={`left ${classVisibleWhenPgnFilled}`}>
+        <div className={`left ${classVisibleWhenMovesAvailable}`}>
           <MoveSelector
             moves={moves}
             range={range}
@@ -51,7 +51,7 @@ export default function App() {
         </div>
         <div id="right" className={hovering ? "frozen" : ""}>
           <div className="download-container">
-            <button className={`download-link ${classVisibleWhenPgnFilled}`} onClick={download}>↓ Download</button>
+            <button className={`download-link ${classVisibleWhenMovesAvailable}`} onClick={download}>↓ Download</button>
           </div>
           <Gif
             moves={moves}

@@ -4,6 +4,10 @@ html, body {
   padding: 0px;
 }
 
+button { /* reset button font in Windows */
+  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+}
+
 #gfychess {
   max-width: 800px;
   margin-left: auto;
@@ -86,6 +90,9 @@ textarea {
   font-size: .65em;
   font-family: inherit;
   border: 1px solid #333333;
+
+  /* for Firefox */
+  scrollbar-width: thin;
 }
 
 textarea:disabled {
@@ -98,6 +105,23 @@ textarea::placeholder {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.lichess-spinner {
+  position: absolute;
+  margin-top: 20px;
+  left: 50%;
+  height: 28px;
+  width: 28px;
+  animation: rotate 0.8s infinite linear;
+  border: 4px solid rgb(70, 136, 241);
+  border-right-color: transparent;
+  border-radius: 50%;
+}
+
+@keyframes rotate {
+  0%    { transform: rotate(0deg); }
+  100%  { transform: rotate(360deg); }
 }
 
 @font-face {
