@@ -358,6 +358,7 @@ export class ChessGif {
         this.dirtySquares.add(y*8 + x);
         this.dirtySquares.add(target[0]*8 + target[1]);
         this.recentDirty = new Set([y*8 + x, target[0]*8 + target[1]]);
+        break;
       }
     }
   }
