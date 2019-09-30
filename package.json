@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "awesome-typescript-loader": "^5.2.1",
-    "babel-minify-webpack-plugin": "^0.2.0",
+    "babel-minify-webpack-plugin": "^0.3.1",
     "tslint": "^5.8.0",
     "typescript": "^3.2.2",
     "webpack": "^4.28.4",
