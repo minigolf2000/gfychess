@@ -16,6 +16,4 @@ Visit localhost:8080
 
 ## Deployment
 
-```
-make deploy
-```
+This is hosted with GitHub Pages. Just push to latest master
