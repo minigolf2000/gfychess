@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChessGif } from "../lib/chessgif"
+import { ChessGif } from "@/app/lib/chessgif";
 
 interface Props {
   moves: string[];
@@ -10,11 +10,10 @@ interface Props {
 }
 
 export class Gif extends React.Component<Props, {}> {
-
   chessGif = new ChessGif();
 
   public componentDidMount() {
-    this.updateAnimatedGif()
+    this.updateAnimatedGif();
   }
 
   public async componentDidUpdate(prevProps: Props) {
@@ -22,25 +21,34 @@ export class Gif extends React.Component<Props, {}> {
       this.chessGif.resetCache();
     }
 
-    if (JSON.stringify(prevProps.moves) != JSON.stringify(this.props.moves) ||
-        prevProps.range[0] != this.props.range[0] ||
-        prevProps.range[1] != this.props.range[1] ||
-        prevProps.flipBoard != this.props.flipBoard) {
-      this.updateAnimatedGif()
+    if (
+      JSON.stringify(prevProps.moves) != JSON.stringify(this.props.moves) ||
+      prevProps.range[0] != this.props.range[0] ||
+      prevProps.range[1] != this.props.range[1] ||
+      prevProps.flipBoard != this.props.flipBoard
+    ) {
+      this.updateAnimatedGif();
     }
   }
 
   public async updateAnimatedGif() {
     if (this.props.moves.length > 0) {
       this.chessGif.loadMoves(this.props.moves);
-      await this.chessGif.createGif(this.props.range[0], this.props.range[1], this.props.flipBoard);
+      await this.chessGif.createGif(
+        this.props.range[0],
+        this.props.range[1],
+        this.props.flipBoard
+      );
 
       const url = this.chessGif.asBase64Gif();
-      this.props.setUrl(url)
+      this.props.setUrl(url);
     }
   }
 
   public render() {
-    return <img id="animated-gif" src={this.props.url} alt="" />
+    if (!this.props.url) {
+      return null;
+    }
+    return <img id="animated-gif" src={this.props.url} alt="" />;
   }
 }

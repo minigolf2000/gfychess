@@ -1,32 +1,26 @@
 {
-  "name": "gfychess",
+  "name": "gfychess-new",
   "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/caeleel/gfychess.git",
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "@types/react": "^16.7.17",
-    "@types/react-copy-to-clipboard": "^4.2.6",
-    "@types/react-dom": "^16.0.11",
-    "react": "16.7.0-alpha.2",
-    "react-copy-to-clipboard": "^5.0.1",
-    "react-dom": "16.7.0-alpha.2"
-  },
+  "private": true,
   "scripts": {
-    "start": "webpack-dev-server --config webpack.config.js",
-    "build": "webpack --config webpack.config.js --env=production",
-    "build:bundle-analyzer": "webpack --config webpack.config.js --env=bundle-analyzer"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^5.2.1",
-    "babel-minify-webpack-plugin": "^0.3.1",
-    "tslint": "^5.8.0",
-    "typescript": "^3.2.2",
-    "webpack": "^4.28.4",
-    "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14",
-    "webpack-merge": "^4.1.1"
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

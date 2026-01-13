@@ -1,23 +1,4 @@
-html, body {
-  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
-  margin: 0px;
-  padding: 0px;
-}
-
-button { /* reset button font in Windows */
-  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
-}
-
-#gfychess {
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 10px;
-}
-
-h1 {
-  margin: 10px 0px;
-}
+@import "tailwindcss";
 
 h2 {
   font-weight: normal;
@@ -28,7 +9,8 @@ h2 {
   margin-bottom: 20px;
 }
 
-h3, #option-form {
+h3,
+#option-form {
   font-size: 12px;
   letter-spacing: 0.02em;
   color: #333333;
@@ -87,7 +69,7 @@ textarea {
   letter-spacing: 0.03em;
 
   /* for Windows */
-  font-size: .65em;
+  font-size: 0.65em;
   font-family: inherit;
   border: 1px solid #333333;
 
@@ -120,13 +102,17 @@ textarea::placeholder {
 }
 
 @keyframes rotate {
-  0%    { transform: rotate(0deg); }
-  100%  { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @font-face {
   font-family: "chesssanspiratf";
-  src: url("public/ChessSansPiratf.woff");
+  src: url("/ChessSansPiratf.woff");
 }
 
 .download-container {
@@ -175,7 +161,8 @@ textarea::placeholder {
   width: 168px;
 }
 
-#move-selector h3, #move-selector p {
+#move-selector h3,
+#move-selector p {
   text-align: center;
 }
 
@@ -188,7 +175,7 @@ textarea::placeholder {
   -webkit-user-select: none;
   font-family: "chesssanspiratf", sans-serif;
   color: #666666;
-  font-size: .7rem;
+  font-size: 0.7rem;
 }
 
 .rowNum {
@@ -204,7 +191,7 @@ textarea::placeholder {
   display: inline-block;
   position: absolute;
   cursor: grab;
-  background: url('public/grip.svg') rgb(70, 136, 241) no-repeat center;
+  background: url("/grip.svg") rgb(70, 136, 241) no-repeat center;
 }
 
 #move-selector .description {
@@ -236,7 +223,7 @@ textarea::placeholder {
 }
 
 #move-selector .move.hovered:hover .flex {
-  border-bottom: 4px solid #EEC54C;
+  border-bottom: 4px solid #eec54c;
 }
 
 #move-selector .selected .flex {
@@ -272,9 +259,9 @@ textarea::placeholder {
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  height: 24px;
   border-radius: 1px;
   margin: 5px;
+  padding: 0px 4px;
 
   /* set these for windows */
   border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
@@ -284,11 +271,11 @@ textarea::placeholder {
 }
 
 #examples button:hover {
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 
 #examples button:active {
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
   color: inherit; /* for Safari */
 }
 
@@ -296,7 +283,7 @@ textarea::placeholder {
   height: 16px;
   width: 12px;
   margin-right: 6px;
-  opacity: .6;
+  opacity: 0.6;
 }
 
 #animated-gif {
@@ -306,7 +293,7 @@ textarea::placeholder {
 }
 
 .frozen #animated-gif {
-  border: 5px solid #EEC54C;
+  border: 5px solid #eec54c;
 }
 
 #option-form {
