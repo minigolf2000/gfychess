@@ -12,7 +12,7 @@ const PIECE_OFFSET: { [piece: string]: number } = {
   Q: 4,
   R: 5,
 };
-let PALETTE = new Uint8Array(1);
+let PALETTE: Uint8Array = new Uint8Array(1);
 const FILES: { [file: string]: number } = {
   a: 0,
   b: 1,
@@ -31,7 +31,7 @@ let NUM_COLORS = 0;
 let COLOR_BITS = 0;
 
 const PIECE_URL = "/piece_set.dat";
-let PIECE_DATA: Uint8Array = null;
+let PIECE_DATA: Uint8Array | null = null;
 
 function malloc(buffer: ResizableBuffer, toAdd: number) {
   if (buffer.idx + toAdd > buffer.data.length) {
@@ -70,7 +70,25 @@ export class ChessGif {
     this.boardRaster = new Uint8Array(BOARD_SIZE * BOARD_SIZE);
     this.sequence = new Uint8Array(BOARD_SIZE * SQUARE_SIZE);
     this.boardCache = {};
-    this.initPromise = this.init();
+    this.initPromise = typeof window !== 'undefined' ? this.init() : Promise.resolve();
+
+    // Copying reset() here for now
+    this.gif.idx = 0;
+    this.moveIdx = 0;
+    this.dirtyBoard = true;
+    this.dirtySquares = new Set();
+    this.prevDirty = new Set();
+    this.recentDirty = new Set();
+    this.board = [
+      ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+      ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
+      [" ", " ", " ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " ", " ", " "],
+      ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
+      ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
+    ];
   }
 
   public reset() {
@@ -97,7 +115,7 @@ export class ChessGif {
   }
 
   asArrayGif(): Uint8Array {
-    return this.gif.data.subarray(0, this.gif.idx);
+    return this.gif.data.slice(0, this.gif.idx);
   }
 
   async init() {
@@ -106,14 +124,13 @@ export class ChessGif {
     for (let i = 0; i < 8 * SQUARE_SIZE; i++)
       ROWS[1 - (i & 1)].set(ones, i * SQUARE_SIZE);
 
-    let body: ArrayBuffer = null;
     const resp = await fetch(PIECE_URL);
-    body = await resp.arrayBuffer();
+    const body = await resp.arrayBuffer();
 
-    PIECE_DATA = new Uint8Array(body);
-    const paletteSize = PIECE_DATA[0];
-    PALETTE = PIECE_DATA.subarray(1, paletteSize * 3 + 1);
-    PIECE_DATA = PIECE_DATA.subarray(paletteSize * 3 + 1);
+    const pieceData = new Uint8Array(body);
+    const paletteSize = pieceData[0];
+    PALETTE = new Uint8Array(pieceData.subarray(1, paletteSize * 3 + 1));
+    PIECE_DATA = new Uint8Array(pieceData.subarray(paletteSize * 3 + 1));
     NUM_COLORS =
       PALETTE.length > 16
         ? 256
@@ -150,8 +167,11 @@ export class ChessGif {
   }
 
   public asBase64Gif(): string {
+    const data = this.asArrayGif();
+    const buffer = new ArrayBuffer(data.length);
+    new Uint8Array(buffer).set(data);
     return window.URL.createObjectURL(
-      new Blob([this.asArrayGif()], { type: "image/gif" })
+      new Blob([buffer], { type: "image/gif" })
     );
   }
 
@@ -179,7 +199,7 @@ export class ChessGif {
     } else {
       const drawSquares = (
         dirty: Set<number>,
-        ignore: Set<number>,
+        ignore: Set<number> | null,
         highlighted: boolean
       ) => {
         for (const affected of dirty) {
@@ -272,11 +292,11 @@ export class ChessGif {
     this.moveIdx++;
 
     move = move.replace(new RegExp(/[#!\?\+x]/, "g"), "");
-    let target: number[] = null;
-    let piece: string = null;
-    let search: string = null;
-    let rankConstraint: number = null;
-    let fileConstraint: number = null;
+    let target: number[] | null = null;
+    let piece: string | null = null;
+    let search: string | null = null;
+    let rankConstraint: number | null = null;
+    let fileConstraint: number | null = null;
     let candidates: number[][] = [];
 
     this.recentDirty = new Set();
@@ -426,11 +446,13 @@ export class ChessGif {
         if (rankConstraint != null && rankConstraint != y) continue;
         if (fileConstraint != null && fileConstraint != x) continue;
 
-        this.board[target[0]][target[1]] = piece;
-        this.board[y][x] = " ";
-        this.dirtySquares.add(y * 8 + x);
-        this.dirtySquares.add(target[0] * 8 + target[1]);
-        this.recentDirty = new Set([y * 8 + x, target[0] * 8 + target[1]]);
+        if (target && piece) {
+          this.board[target[0]][target[1]] = piece;
+          this.board[y][x] = " ";
+          this.dirtySquares.add(y * 8 + x);
+          this.dirtySquares.add(target[0] * 8 + target[1]);
+          this.recentDirty = new Set([y * 8 + x, target[0] * 8 + target[1]]);
+        }
         break;
       }
     }
@@ -676,7 +698,7 @@ export class ChessGif {
         const boardY = (y * SQUARE_SIZE + i) * BOARD_SIZE;
         for (let j = 0; j < SQUARE_SIZE; j++) {
           this.boardRaster[boardY + j + x * SQUARE_SIZE] =
-            PIECE_DATA[srcY + xOff + j];
+            PIECE_DATA![srcY + xOff + j];
         }
       }
     }
