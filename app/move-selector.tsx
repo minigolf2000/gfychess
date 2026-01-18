@@ -164,33 +164,33 @@ export function MoveSelector({
     left: ((endHandleIndex % 2) + 1) * ROW_WIDTH - DRAGGABLE_HANDLE_WIDTH + 35,
   };
   return (
-    <div id="move-selector">
-      <p className="description">Moves to include</p>
+    <div id="move-selector" className="mr-10 w-42">
+      <p className="text-neutral-700 text-xs tracking-tight flex items-center justify-center h-15 m-0 pl-8">Moves to include</p>
       <div
-        className={tableClassName}
+        className={`relative ${tableClassName}`}
         onMouseLeave={() =>
           !isDraggingStartHandle && !isDraggingEndHandle && commit()
         }
         ref={tableEl}
       >
         <span
-          className="drag-handle start"
+          className="w-2 h-8 inline-block absolute cursor-grab bg-[url('/grip.svg')] bg-blue-500 bg-no-repeat bg-center"
           style={startHandleStyle}
           onMouseDown={onStartHandleMouseDown}
         ></span>
         <span
-          className="drag-handle end"
+          className="w-2 h-8 inline-block absolute cursor-grab bg-[url('/grip.svg')] bg-blue-500 bg-no-repeat bg-center"
           style={endHandleStyle}
           onMouseDown={onEndHandleMouseDown}
         ></span>
         {columns(moves).map((column: string[], rowNum: number) => (
-          <div className="row" key={rowNum}>
-            <div className="rowNum">{rowNum + 1}.</div>
+          <div className="grid w-44 grid-cols-[30px_70px_70px] select-none font-['chesssanspiratf',sans-serif] text-neutral-500 text-xs" key={rowNum}>
+            <div className="flex justify-end items-center pr-1">{rowNum + 1}.</div>
             {[0, 1].map((offset: number) => {
               const i = rowNum * 2 + offset;
               if (!column[offset]) {
                 return (
-                  <span key={i} className="move disabled">
+                  <span key={i} className="move disabled inline-block h-7 text-base py-0.5 cursor-pointer text-neutral-700">
                     &nbsp;
                   </span>
                 );
@@ -203,9 +203,9 @@ export function MoveSelector({
                     }}
                     onMouseDown={() => setMouseDownIndex(i)}
                     onDoubleClick={resetSelection}
-                    className={"move " + className(i)}
+                    className={"move inline-block h-7 text-base py-0.5 cursor-pointer text-neutral-700 " + className(i)}
                   >
-                    <span className="flex">{column[offset]}</span>
+                    <span className="flex items-center justify-center border-t-4 border-b-4 border-transparent">{column[offset]}</span>
                   </span>
                 );
               }
@@ -213,7 +213,7 @@ export function MoveSelector({
           </div>
         ))}
       </div>
-      <p className="description">
+      <p className="text-neutral-700 text-xs tracking-tight text-center">
         {endHandleIndex - startHandleIndex + 1} out of {moves.length} moves
       </p>
     </div>

@@ -37,7 +37,7 @@ export class Gif extends React.Component<Props, {}> {
       await this.chessGif.createGif(
         this.props.range[0],
         this.props.range[1],
-        this.props.flipBoard
+        this.props.flipBoard,
       );
 
       const url = this.chessGif.asBase64Gif();
@@ -49,6 +49,13 @@ export class Gif extends React.Component<Props, {}> {
     if (!this.props.url) {
       return null;
     }
-    return <img id="animated-gif" src={this.props.url} alt="" />;
+    return (
+      <img
+        id="animated-gif"
+        className="border-4 border-white max-h-96 max-w-96"
+        src={this.props.url}
+        alt=""
+      />
+    );
   }
 }

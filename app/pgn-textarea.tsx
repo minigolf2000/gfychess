@@ -27,10 +27,11 @@ export function PGNTextarea(props: Props) {
   const loadingLichessUrl = props.pgn.match(lichessRegex) != null;
   return (
     <>
-      {loadingLichessUrl && <div className="lichess-spinner" />}
+      {loadingLichessUrl && <div className="absolute mt-5 left-1/2 size-7 animate-spin border-4 border-blue-500 border-r-transparent rounded-full" />}
 
       <textarea
         id="pgnText"
+        className="w-[calc(100%-20px)] h-15 text-neutral-700 shadow-inner leading-tight p-2.5 transition-all duration-200 ease-in tracking-wide text-xs font-inherit border border-neutral-700 disabled:bg-neutral-200 placeholder:text-base placeholder:leading-snug placeholder:truncate"
         placeholder='Paste PGN e.g. "1. e4 e5 2. Nf3 ..." or Lichess URL "lichess.org/xxxx" here'
         value={props.pgn}
         disabled={loadingLichessUrl}
@@ -43,12 +44,13 @@ export function PGNTextarea(props: Props) {
         spellCheck={false}
       />
 
-      <div id="examples">
-        <h3>PGN examples</h3>
+      <div className="flex items-center mt-2.5 mb-4 flex-wrap h-9 overflow-hidden">
+        <h3 className="text-xs tracking-tight text-neutral-700 my-2.5 mr-1">PGN examples</h3>
         {exampleGames.map((game) => (
           <CopyToClipboard key={game.name} text={() => game.pgn}>
-            <button>
+            <button className="inline-flex items-center rounded-sm m-1 px-1 border border-neutral-300 bg-inherit hover:bg-neutral-100 active:bg-neutral-100">
               <Image
+                className="size-4 mr-1.5 opacity-60"
                 height={16}
                 width={12}
                 src="/clipboard.svg"
